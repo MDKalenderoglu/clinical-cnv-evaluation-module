@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klinik CNV Değerlendirme Modülü — ACMG/ClinGen</title>
+<meta name="description" content="ACMG/ClinGen CNV sınıflandırma çerçevesine dayalı yapılandırılmış klinik eğitim ve karar destek aracı. Riggs et al. 2020 Bayesian puanlama sistemi.">
+<meta name="keywords" content="CNV, ACMG, ClinGen, copy number variant, klinik genetik, Bayesian puanlama, Riggs 2020, delesyon, duplikasyon, HI, TS, PVS1">
+<meta name="author" content="Ankara Üniversitesi Tıp Fakültesi Çocuk Genetik Hastalıkları Bilim Dalı">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Klinik CNV Değerlendirme Modülü — ACMG/ClinGen">
+<meta property="og:description" content="ACMG/ClinGen CNV sınıflandırma çerçevesine dayalı yapılandırılmış klinik eğitim ve karar destek aracı.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ═══════════════════════════════════════════════════
+   TEMA SİSTEMİ — AÇIK (varsayılan) + KOYU
+   Palet: Akdeniz Klinik — warm cream, deep marine, terracotta vurgular
+   ═══════════════════════════════════════════════════ */
+:root,[data-theme="light"]{
+  --bg:#f7f5f0;
+  --bg2:#edeae3;
+  --bg3:#e2dfd8;
+  --surface:#ffffff;
+  --surface2:#faf9f6;
+  --hover:#f0ede6;
+
+  --border:rgba(30,40,60,.09);
+  --border2:rgba(30,40,60,.16);
+  --border3:rgba(30,40,60,.28);
+
+  --txt:#1a2133;
+  --txt2:#3c4f68;
+  --txt3:#6b7d96;
+  --txt4:#9eadc0;
+
+  /* Vurgular */
+  --blue:#1a4a7a;
+  --blue-bg:rgba(26,74,122,.06);
+  --blue-b:rgba(26,74,122,.18);
+  --blue-mid:#2563a8;
+
+  --teal:#0f6b5e;
+  --teal-bg:rgba(15,107,94,.06);
+  --teal-b:rgba(15,107,94,.18);
+
+  --amber:#9a5c08;
+  --amber-bg:rgba(154,92,8,.07);
+  --amber-b:rgba(154,92,8,.20);
+
+  --red:#8b1c1c;
+  --red-bg:rgba(139,28,28,.06);
+  --red-b:rgba(139,28,28,.18);
+
+  --green:#1a6b3c;
+  --green-bg:rgba(26,107,60,.06);
+  --green-b:rgba(26,107,60,.18);
+
+  --purple:#5b21b6;
+  --purple-bg:rgba(91,33,182,.06);
+  --purple-b:rgba(91,33,182,.18);
+
+  --terra:#c0521a;
+  --terra-bg:rgba(192,82,26,.06);
+  --terra-b:rgba(192,82,26,.18);
+
+  --shadow:0 1px 4px rgba(0,0,0,.06),0 0 1px rgba(0,0,0,.04);
+  --shadow2:0 4px 16px rgba(0,0,0,.09),0 0 1px rgba(0,0,0,.04);
+
+  --inp-bg:#fff;
+  --inp-border:rgba(30,40,60,.18);
+  --overlay:rgba(30,40,60,.28);
+  --nav-w:220px;
+}
+[data-theme="dark"]{
+  --bg:#0d1420;
+  --bg2:#131c2e;
+  --bg3:#192437;
+  --surface:#162035;
+  --surface2:#1b2840;
+  --hover:#1f2f4a;
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --border3:rgba(255,255,255,.20);
+  --txt:#d8e0ea;
+  --txt2:#8fa0b8;
+  --txt3:#566880;
+  --txt4:#344258;
+  --blue:#5c9bd6;
+  --blue-bg:rgba(92,155,214,.08);
+  --blue-b:rgba(92,155,214,.22);
+  --blue-mid:#4a87c8;
+  --teal:#3dbfa8;
+  --teal-bg:rgba(61,191,168,.08);
+  --teal-b:rgba(61,191,168,.22);
+  --amber:#d4912a;
+  --amber-bg:rgba(212,145,42,.08);
+  --amber-b:rgba(212,145,42,.22);
+  --red:#d45858;
+  --red-bg:rgba(212,88,88,.08);
+  --red-b:rgba(212,88,88,.22);
+  --green:#3cbb6a;
+  --green-bg:rgba(60,187,106,.08);
+  --green-b:rgba(60,187,106,.22);
+  --purple:#9b7fe0;
+  --purple-bg:rgba(155,127,224,.08);
+  --purple-b:rgba(155,127,224,.22);
+  --terra:#e07848;
+  --terra-bg:rgba(224,120,72,.08);
+  --terra-b:rgba(224,120,72,.22);
+  --shadow:0 1px 4px rgba(0,0,0,.35);
+  --shadow2:0 4px 16px rgba(0,0,0,.35);
+  --inp-bg:#131c2e;
+  --inp-border:rgba(255,255,255,.14);
+  --overlay:rgba(0,0,0,.55);
+}
+
+/* ── RESET & TEMEL ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s,color .25s;
+}
+a{color:var(--blue);text-decoration:none;border-bottom:1px dotted var(--blue-b);transition:.15s}
+a:hover{border-bottom-color:var(--blue);text-decoration:none}
+::selection{background:var(--blue-bg);color:var(--blue)}
+
+/* ── BAŞLIK & ÜSTBANT ── */
+.hdr{
+  padding:0 28px;
+  height:58px;
+  border-bottom:2px solid var(--border2);
+  position:sticky;top:0;z-index:200;
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  box-shadow:var(--shadow);
+  transition:background .25s;
+}
+.hdr-brand{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.hdr-title{
+  font-family:'Merriweather',Georgia,serif;
+  font-size:17px;font-weight:700;
+  letter-spacing:-.01em;line-height:1.2;
+  color:var(--blue);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hdr-sub{font-size:11px;color:var(--txt3);margin-top:1px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-left{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.hdr-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.hamburger{display:none;background:none;border:1.5px solid var(--border2);border-radius:5px;color:var(--txt2);padding:5px 10px;cursor:pointer;font-size:17px;line-height:1}
+
+.theme-btn{background:var(--bg2);border:1.5px solid var(--border2);border-radius:5px;padding:5px 14px;cursor:pointer;font-size:12.5px;color:var(--txt3);transition:.15s;font-family:'Inter',sans-serif;font-weight:500}
+.theme-btn:hover{background:var(--bg3);color:var(--txt2)}
+
+/* Canlı skor rozeti */
+.live-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;font-weight:600;
+  padding:5px 14px;border-radius:5px;
+  border:1.5px solid var(--border2);
+  background:var(--surface2);
+  transition:.25s;white-space:nowrap;
+}
+.live-badge.p{background:var(--red-bg);border-color:var(--red-b);color:var(--red)}
+.live-badge.lp{background:var(--amber-bg);border-color:var(--amber-b);color:var(--amber)}
+.live-badge.vus{background:var(--bg2);color:var(--txt3);border-color:var(--border)}
+.live-badge.lb{background:var(--teal-bg);border-color:var(--teal-b);color:var(--teal)}
+.live-badge.b{background:var(--blue-bg);border-color:var(--blue-b);color:var(--blue)}
+
+.progbar{height:3px;background:var(--border)}
+.progfill{height:100%;background:var(--blue-mid);transition:width .35s ease;width:0}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:var(--nav-w) 1fr;min-height:calc(100vh - 61px)}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  border-right:1.5px solid var(--border);
+  padding:16px 0 28px;
+  position:sticky;top:61px;
+  height:calc(100vh - 61px);
+  overflow-y:auto;
+  background:var(--surface);
+  transition:background .25s,transform .3s;
+  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.nav-group{
+  font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--txt4);padding:20px 18px 5px;font-weight:700;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 18px;cursor:pointer;
+  transition:.12s;border-left:3px solid transparent;
+  font-size:13.5px;color:var(--txt3);font-weight:400;
+}
+.nav-item:hover{background:var(--hover);color:var(--txt2)}
+.nav-item.active{border-left-color:var(--blue);background:var(--blue-bg);color:var(--blue);font-weight:600}
+.nav-item.done .nnum{background:var(--green-bg);color:var(--green);border-color:var(--green-b)}
+.nnum{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  width:20px;height:20px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1.5px solid var(--border);
+  color:var(--txt4);flex-shrink:0;transition:.15s;
+}
+
+/* ── ANA ALAN ── */
+.main{padding:36px 44px 56px;max-width:840px;animation:fadeUp .2s ease}
+.step-card{display:none}
+.step-card.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+.eyebrow{font-size:11.5px;letter-spacing:.04em;color:var(--txt4);margin-bottom:5px;font-weight:600;text-transform:uppercase}
+.page-title{
+  font-family:'Merriweather',Georgia,serif;
+  font-size:26px;font-weight:700;
+  letter-spacing:-.02em;margin-bottom:6px;line-height:1.25;
+  color:var(--txt);
+}
+.page-lead{font-size:15px;color:var(--txt2);margin-bottom:28px;max-width:660px;line-height:1.75}
+
+/* ── PANEL (KATLANIR) ── */
+.panel{border:1.5px solid var(--border);border-radius:6px;margin-bottom:14px;overflow:hidden;background:var(--surface);transition:border-color .15s;box-shadow:var(--shadow)}
+.panel:hover{border-color:var(--border2)}
+.panel-head{display:flex;align-items:center;gap:11px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .1s}
+.panel-head:hover{background:var(--hover)}
+.panel-tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:4px;flex-shrink:0;letter-spacing:.03em}
+.panel-title{font-size:14.5px;font-weight:600;flex:1;line-height:1.3;color:var(--txt)}
+.panel-sub{font-size:12px;color:var(--txt3);margin-top:2px}
+.panel-chev{color:var(--txt4);font-size:11px;transition:transform .2s;flex-shrink:0}
+.panel.open .panel-chev{transform:rotate(180deg)}
+.panel-body{display:none;padding:18px 20px;border-top:1.5px solid var(--border)}
+.panel.open .panel-body{display:block}
+
+/* ── PUANLAMA BÖLÜMÜ ── */
+.score-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:6px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.score-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt3);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.score-pts{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;transition:.2s}
+.score-pts.pos{color:var(--green)}.score-pts.neg{color:var(--red)}.score-pts.zero{color:var(--txt4)}
+
+.choice-lbl{font-size:14px;color:var(--txt2);margin-bottom:8px;font-weight:500}
+.choice-opts{display:flex;flex-direction:column;gap:5px}
+.choice-opt{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 16px;border-radius:6px;
+  border:1.5px solid var(--border);cursor:pointer;
+  transition:.15s;background:var(--surface2);
+}
+.choice-opt:hover{border-color:var(--border2);background:var(--hover)}
+.choice-opt.selected{border-color:var(--blue-b);background:var(--blue-bg)}
+.choice-opt.selected .co-radio{border-color:var(--blue);background:var(--blue)}
+.co-radio{
+  width:16px;height:16px;border-radius:50%;border:2px solid var(--border3);
+  flex-shrink:0;margin-top:3px;transition:.15s;position:relative;
+}
+.co-radio::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--surface);opacity:0;transition:.15s}
+.choice-opt.selected .co-radio::after{opacity:1}
+.co-text{flex:1;font-size:13.5px;color:var(--txt2);line-height:1.5}
+.co-text strong{color:var(--txt);font-weight:600}
+.co-pts{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0;margin-top:3px}
+.co-pts.pos{color:var(--green)}.co-pts.neg{color:var(--red)}.co-pts.zero{color:var(--txt4)}
+
+/* ── ARAÇ LİSTESİ ── */
+.tool-list{margin:14px 0}
+.tool-row{display:flex;align-items:stretch;border:1.5px solid var(--border);border-radius:5px;margin-bottom:6px;overflow:hidden;transition:.15s}
+.tool-row:hover{border-color:var(--border2)}
+.tool-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:10px 14px;background:var(--surface2);border-right:1.5px solid var(--border);min-width:150px;display:flex;align-items:center;color:var(--blue);letter-spacing:.01em}
+.tool-desc{color:var(--txt2);padding:10px 14px;flex:1;display:flex;align-items:center;line-height:1.5;font-size:13px}
+.tool-link a{padding:10px 12px;display:flex;align-items:center;color:var(--txt4);font-size:11px;border:none;border-left:1.5px solid var(--border);transition:.15s}
+.tool-link a:hover{color:var(--blue);background:var(--blue-bg)}
+
+/* ── BİLGİ KUTULARI ── */
+.note{border-radius:6px;padding:12px 16px;margin:12px 0;font-size:13.5px;line-height:1.65;display:flex;gap:12px;align-items:flex-start}
+.note-icon{flex-shrink:0;font-weight:800;font-size:12px;margin-top:2px;font-family:'JetBrains Mono',monospace}
+.note-blue{background:var(--blue-bg);border:1.5px solid var(--blue-b);color:var(--blue)}
+.note-amber{background:var(--amber-bg);border:1.5px solid var(--amber-b);color:var(--amber)}
+.note-green{background:var(--green-bg);border:1.5px solid var(--green-b);color:var(--green)}
+.note-red{background:var(--red-bg);border:1.5px solid var(--red-b);color:var(--red)}
+.note-teal{background:var(--teal-bg);border:1.5px solid var(--teal-b);color:var(--teal)}
+
+/* Eğitim toggle */
+.edu-toggle{font-size:12.5px;color:var(--purple);cursor:pointer;padding:3px 0;border:none;background:none;font-family:'Inter',sans-serif;font-weight:600;transition:.15s}
+.edu-toggle:hover{color:var(--blue)}
+.edu-box{display:none;margin:8px 0 12px;padding:14px 16px;border-left:4px solid var(--purple-b);background:var(--purple-bg);border-radius:0 6px 6px 0;font-size:13.5px;color:var(--txt2);line-height:1.7}
+.edu-box.open{display:block}
+
+/* ── TABLO ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--txt3);padding:9px 12px;border-bottom:2px solid var(--border2);text-align:left;background:var(--surface2);font-weight:700}
+.tbl td{padding:9px 12px;border-bottom:1.5px solid var(--border);color:var(--txt2);line-height:1.5}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--hover)}
+.pos{color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:700}
+.neg{color:var(--red);font-family:'JetBrains Mono',monospace;font-weight:700}
+.neu{color:var(--txt4);font-family:'JetBrains Mono',monospace}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+.form-lbl{font-size:12px;color:var(--txt3);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.form-inp{
+  font-family:'Inter',sans-serif;font-size:14.5px;
+  padding:10px 14px;border:1.5px solid var(--inp-border);
+  border-radius:5px;background:var(--inp-bg);color:var(--txt);
+  transition:border-color .15s;outline:none;line-height:1.4;
+}
+.form-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+.form-inp::placeholder{color:var(--txt4)}
+textarea.form-inp{resize:vertical;min-height:72px}
+select.form-inp{
+  cursor:pointer;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' fill='%236b7d96' viewBox='0 0 11 7'%3E%3Cpath d='M5.5 7L0 0h11z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+.form-sec{font-family:'Merriweather',serif;font-size:16.5px;font-weight:700;color:var(--txt);margin:22px 0 10px;padding-bottom:8px;border-bottom:2px solid var(--border2)}
+.form-sec:first-child{margin-top:0}
+
+/* Hasta fotosu */
+.photo-upload-area{
+  border:2.5px dashed var(--border2);border-radius:8px;
+  padding:24px;text-align:center;cursor:pointer;transition:.2s;
+  background:var(--surface2);position:relative;
+}
+.photo-upload-area:hover{border-color:var(--blue);background:var(--blue-bg)}
+.photo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:6px;display:none;margin-top:12px}
+.photo-placeholder{font-size:13.5px;color:var(--txt3);pointer-events:none}
+.photo-placeholder-icon{font-size:24px;margin-bottom:8px;display:block;color:var(--txt4);font-family:"JetBrains Mono",monospace}
+
+/* ── DÜĞMELER ── */
+.btn{font-family:'Inter',sans-serif;font-size:13.5px;padding:9px 20px;border-radius:5px;border:1.5px solid var(--border2);background:var(--surface);color:var(--txt2);cursor:pointer;transition:.15s;font-weight:500}
+.btn:hover{background:var(--hover);color:var(--txt)}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.btn-primary:hover{background:var(--blue-mid);border-color:var(--blue-mid);color:#fff}
+.btn-outline{background:transparent;border-color:var(--blue-b);color:var(--blue)}
+.btn-outline:hover{background:var(--blue-bg)}
+.btn-danger{background:var(--red-bg);border-color:var(--red-b);color:var(--red)}
+.btn-danger:hover{background:rgba(139,28,28,.12)}
+.btn-sm{font-size:12px;padding:6px 14px}
+
+/* ── ADIM NAVİGASYON ── */
+.step-nav{display:flex;justify-content:space-between;margin-top:36px;padding-top:18px;border-top:2px solid var(--border);align-items:center}
+.step-ctr{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--txt4)}
+.nav-btns{display:flex;gap:8px}
+
+/* ── SONUÇ EKRANI ── */
+.result-screen{display:none;padding:36px 44px 56px;max-width:840px}
+.result-screen.active{display:block}
+.result-summary{background:var(--surface);border:2px solid var(--border2);border-radius:8px;padding:28px;margin-bottom:18px;box-shadow:var(--shadow2)}
+.result-class{font-family:'Merriweather',serif;font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin:4px 0}
+.result-score-line{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--txt3);margin-top:6px}
+.result-patient-line{margin-top:16px;padding-top:16px;border-top:1.5px solid var(--border);font-size:14px;color:var(--txt2);line-height:1.65}
+
+/* Bar chart */
+.bar-chart{margin:14px 0 4px}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.bar-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt3);width:75px;flex-shrink:0}
+.bar-track{flex:1;height:10px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.bar-val{font-family:'JetBrains Mono',monospace;font-size:11.5px;width:52px;text-align:right;font-weight:600}
+
+/* ── RAPOR KARTI ── */
+.report-card{display:none;border:2px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--surface);margin-top:18px;box-shadow:var(--shadow2)}
+.report-card.visible{display:block}
+.rc-hdr{padding:20px 24px;border-bottom:2px solid var(--border2);display:flex;justify-content:space-between;align-items:flex-start;background:var(--blue-bg)}
+.rc-hdr-l .rc-hdr-title{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--blue)}
+.rc-hdr-l .rc-hdr-sub{font-size:11.5px;color:var(--txt3);margin-top:3px}
+.rc-hdr-r{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--txt3);text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.rc-section{padding:18px 24px;border-bottom:1.5px solid var(--border)}
+.rc-section:last-child{border-bottom:none}
+.rc-section-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);font-weight:700;margin-bottom:12px}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rc-field{padding:9px 12px;border:1.5px solid var(--border);border-radius:5px;background:var(--surface2)}
+.rc-field-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--txt4);font-weight:600;margin-bottom:2px}
+.rc-field-val{font-size:13.5px;color:var(--txt);font-weight:500;line-height:1.4}
+.rc-class-box{text-align:center;padding:18px;border:2px solid var(--border2);border-radius:6px;margin:14px 0}
+.rc-class-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:5px;font-weight:700}
+.rc-class-val{font-family:'Merriweather',serif;font-size:28px;font-weight:700}
+.rc-class-score{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--txt3);margin-top:3px}
+.rc-scores{display:grid;grid-template-columns:repeat(8,1fr);border:1.5px solid var(--border);border-radius:5px;overflow:hidden;margin:12px 0}
+.rc-sh,.rc-sv{padding:8px 4px;text-align:center;border-right:1px solid var(--border)}
+.rc-sh:last-child,.rc-sv:last-child{border-right:none}
+.rc-sh{background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;color:var(--txt3);font-weight:700}
+.rc-sv{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;border-top:1.5px solid var(--border)}
+.rc-notes{padding:12px 14px;border:1.5px solid var(--border);border-radius:5px;font-size:13px;color:var(--txt2);line-height:1.65;background:var(--surface2)}
+.rc-photo-wrap{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.rc-photo{width:72px;height:72px;border-radius:6px;object-fit:cover;border:2px solid var(--border2);display:none}
+.rc-footer{padding:14px 24px;border-top:1.5px solid var(--border);font-size:10.5px;color:var(--txt4);display:flex;justify-content:space-between;align-items:center}
+
+.download-btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+/* ── ÇEŞITLI ── */
+h4{font-size:15px;font-weight:600;color:var(--txt);margin:14px 0 7px}
+p,.desc{color:var(--txt2);font-size:14px;margin-bottom:9px;line-height:1.75}
+ul{color:var(--txt2);font-size:14px;padding-left:20px;margin-bottom:9px}
+ul li{margin-bottom:5px;line-height:1.65}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2);border:1.5px solid var(--border);padding:2px 6px;border-radius:4px;color:var(--terra)}
+.sm-tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.02em}
+.tag-blue{background:var(--blue-bg);border:1.5px solid var(--blue-b);color:var(--blue)}
+.tag-amber{background:var(--amber-bg);border:1.5px solid var(--amber-b);color:var(--amber)}
+.tag-green{background:var(--green-bg);border:1.5px solid var(--green-b);color:var(--green)}
+.tag-red{background:var(--red-bg);border:1.5px solid var(--red-b);color:var(--red)}
+.tag-gray{background:var(--bg2);border:1.5px solid var(--border);color:var(--txt3)}
+.tag-purple{background:var(--purple-bg);border:1.5px solid var(--purple-b);color:var(--purple)}
+.tag-teal{background:var(--teal-bg);border:1.5px solid var(--teal-b);color:var(--teal)}
+.feedback-box{border-radius:5px;padding:10px 14px;margin-top:10px;font-size:13px;display:none;background:var(--blue-bg);border:1.5px solid var(--blue-b);color:var(--blue);line-height:1.55}
+.feedback-box.vis{display:block}
+.section-divider{height:2px;background:var(--border);margin:18px 0}
+
+/* ── MOBİL & TABLET ── */
+@media(max-width:900px){
+  :root{--nav-w:200px}
+  .main,.result-screen{padding:28px 28px 48px}
+}
+@media(max-width:768px){
+  :root{--nav-w:0px}
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:fixed;top:58px;left:0;
+    width:272px;height:calc(100vh - 58px);
+    z-index:150;transform:translateX(-100%);
+    box-shadow:var(--shadow2);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .hamburger{display:block}
+  .main,.result-screen{padding:22px 18px 44px}
+  .form-grid{grid-template-columns:1fr}
+  .hdr-sub{display:none}
+  .hdr-title{font-size:15px}
+  .tool-row{flex-direction:column}
+  .tool-name{min-width:unset;border-right:none;border-bottom:1.5px solid var(--border)}
+  .tool-link a{border-left:none;border-top:1.5px solid var(--border)}
+  .rc-grid{grid-template-columns:1fr}
+  .rc-scores{grid-template-columns:repeat(4,1fr)}
+  .result-class{font-size:26px}
+  .page-title{font-size:22px}
+}
+@media(max-width:480px){
+  .hdr{padding:0 16px;height:52px}
+  .main,.result-screen{padding:18px 14px 40px}
+  .form-grid{grid-template-columns:1fr}
+  .nav-btns{flex-wrap:wrap}
+  .rc-scores{grid-template-columns:repeat(4,1fr)}
+}
+.mob-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--overlay);z-index:140}
+.mob-overlay.active{display:block}
+
+/* ── BASKI/PDF ── */
+@media print{
+  body{background:#fff!important;color:#111!important;font-size:11pt}
+  .hdr,.sidebar,.hamburger,.mob-overlay,.progbar,.step-nav,.nav-btns,.theme-btn,.btn-danger,.download-btns,.live-badge,.edu-toggle,.edu-box{display:none!important}
+  .layout{display:block!important}
+  .main,.result-screen{padding:0!important;max-width:100%!important}
+  .report-card{break-inside:avoid;border:2px solid #333!important}
+  *{color:#111!important;box-shadow:none!important;transition:none!important;background:transparent!important}
+  .rc-hdr{background:#f5f5f5!important;border-bottom:2px solid #333!important}
+  .rc-hdr-l .rc-hdr-title{color:#1a4a7a!important}
+  .rc-section{border-bottom:1px solid #ccc!important}
+  .rc-field{border-color:#ccc!important;background:#fafafa!important}
+  .rc-class-box{border:2px solid #333!important;background:#fafafa!important}
+  .rc-scores,.rc-sh,.rc-sv{border-color:#ccc!important}
+  .rc-sh{background:#f0f0f0!important}
+  .rc-footer{border-top:1px solid #ccc!important}
+  .rc-photo{display:block!important}
+  a{color:#111!important;border:none!important}
+  .panel-body{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <button class="hamburger" onclick="toggleMob()" aria-label="Menü">☰</button>
+    <div class="hdr-brand">
+      <div class="hdr-title">Klinik CNV Değerlendirme Modülü</div>
+      <div class="hdr-sub">ACMG/ClinGen CNV sınıflandırma çerçevesine dayalı yapılandırılmış eğitim ve karar destek aracı</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <button class="btn-danger btn-sm" onclick="resetAll()">Tümü Sıfırla</button>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">Koyu Tema</button>
+    <div class="live-badge vus" id="liveBadge">0.00 · VUS</div>
+  </div>
+</div>
+<div class="progbar"><div class="progfill" id="progFill"></div></div>
+<div class="mob-overlay" id="mobOverlay" onclick="toggleMob()"></div>
+
+<div class="layout">
+
+<!-- SİDEBAR -->
+<div class="sidebar" id="sidebarEl">
+  <div class="nav-group">Olgu Hazırlığı</div>
+  <div class="nav-item active" onclick="goTo(-1)" id="navN1"><div class="nnum">I</div><div>Olgu ve CNV Bilgi Kartı</div></div>
+  <div class="nav-item" onclick="goTo(0)" id="nav0"><div class="nnum">II</div><div>Teknik Doğrulama</div></div>
+  <div class="nav-item" onclick="goTo(1)" id="nav1"><div class="nnum">III</div><div>CNV Triaj</div></div>
+  <div class="nav-group">Puanlama</div>
+  <div class="nav-item" onclick="goTo(2)" id="nav2"><div class="nnum">1</div><div>Section 1 · Gen İçeriği</div></div>
+  <div class="nav-item" onclick="goTo(3)" id="nav3"><div class="nnum">2</div><div>Section 2 · HI/TS Overlap</div></div>
+  <div class="nav-item" onclick="goTo(4)" id="nav4"><div class="nnum">3</div><div>Section 3 · Gen Sayısı</div></div>
+  <div class="nav-item" onclick="goTo(5)" id="nav5"><div class="nnum">4</div><div>Section 4 · Kanıt</div></div>
+  <div class="nav-item" onclick="goTo(6)" id="nav6"><div class="nnum">5</div><div>Section 5 · Kalıtım</div></div>
+  <div class="nav-group">Değerlendirme</div>
+  <div class="nav-item" onclick="goTo(7)" id="nav7"><div class="nnum">∑</div><div>Skor ve Sınıf</div></div>
+  <div class="nav-item" onclick="goTo(8)" id="nav8"><div class="nnum">↔</div><div>Franklin Kontrolü</div></div>
+  <div class="nav-item" onclick="goTo(9)" id="nav9"><div class="nnum">K</div><div>Klinik Korelasyon</div></div>
+  <div class="nav-group">Raporlama</div>
+  <div class="nav-item" onclick="goTo(10)" id="nav10"><div class="nnum">R</div><div>Raporlama</div></div>
+  <div class="nav-item" onclick="goTo(11)" id="nav11"><div class="nnum">T</div><div>Takip ve İzlem</div></div>
+  <div class="nav-group">Kaynak</div>
+  <div class="nav-item" onclick="goTo(12)" id="nav12"><div class="nnum">?</div><div>Kavram Rehberi</div></div>
+  <div class="nav-item" onclick="goTo(13)" id="nav13"><div class="nnum">*</div><div>Referanslar</div></div>
+  <div class="nav-group">Sonuç</div>
+  <div class="nav-item" onclick="showResult()" id="navR" style="color:var(--amber)"><div class="nnum" style="color:var(--amber)">→</div><div style="font-weight:600">Sonuç ve Rapor</div></div>
+</div>
+
+<div id="mainWrap">
+
+<!-- ═══════════ ADIM -1: OLGU VE CNV BİLGİ KARTI ═══════════ -->
+<div class="main step-card active" id="stepN1">
+  <div class="eyebrow">Olgu Hazırlığı</div>
+  <div class="page-title">Olgu ve CNV Bilgi Kartı</div>
+  <div class="page-lead">Değerlendirmeye başlamadan önce hasta ve CNV bilgilerini girin. Bu bilgiler tüm adımlar boyunca korunacak ve nihai rapor kartında otomatik kullanılacaktır.</div>
+
+  <!-- Hasta Fotoğrafı -->
+  <div class="form-sec">Ek Fenotip Görseli — Onamlı / Lokal Kullanım</div>
+  <div class="form-group full">
+    <label class="form-lbl">Fenotip Görseli (isteğe bağlı)</label>
+    <div class="photo-upload-area" id="photoUploadArea">
+      <input type="file" id="ptPhoto" accept="image/*" onchange="handlePhoto(this)">
+      <div class="photo-placeholder" id="photoPlaceholder">
+        <div style="font-size:24px;margin-bottom:8px;color:var(--txt4);font-weight:300;font-family:'JetBrains Mono',monospace">[+]</div>
+        <div style="font-weight:600;font-size:13.5px;color:var(--txt2)">Fenotip Görseli Ekle</div>
+        <div style="font-size:12px;margin-top:4px;color:var(--txt3)">JPG, PNG — tıklayın veya sürükleyin</div>
+      </div>
+      <img id="photoPreview" class="photo-preview" alt="Fenotip görseli">
+    </div>
+    <div class="note note-teal" style="margin-top:10px">
+      <span class="note-icon">i</span>
+      <span>Bu alan isteğe bağlıdır. Görsel yalnızca lokal tarayıcı oturumunda kullanılır; sunucuya gönderilmez ve yerel depolamaya yazılmaz. Kurumsal onam ve veri güvenliği sorumluluğu kullanıcıya aittir.</span>
+    </div>
+  </div>
+
+  <!-- Hasta Bilgileri -->
+  <div class="form-sec">Hasta Bilgileri</div>
+  <div class="form-grid">
+    <div class="form-group"><label class="form-lbl">Hasta ID / İnisyaller</label><input class="form-inp" id="ptId" placeholder="Örn: A.K. veya #12345"></div>
+    <div class="form-group"><label class="form-lbl">Yaş</label><input class="form-inp" id="ptAge" placeholder="Örn: 3 yaş 4 ay"></div>
+    <div class="form-group"><label class="form-lbl">Cinsiyet</label><select class="form-inp" id="ptSex"><option value="">Seçin</option><option>Erkek</option><option>Kadın</option><option>Belirsiz</option></select></div>
+    <div class="form-group"><label class="form-lbl">Başvuru Nedeni</label><input class="form-inp" id="ptReason" placeholder="Örn: Global gelişme geriliği"></div>
+    <div class="form-group full"><label class="form-lbl">Fenotip Özeti</label><textarea class="form-inp" id="ptPheno" placeholder="Örn: Mikrosefali, hipotoni, dismorfik yüz bulguları, beslenme güçlüğü"></textarea></div>
+    <div class="form-group full"><label class="form-lbl">HPO Terimleri</label><textarea class="form-inp" id="ptHpo" placeholder="Örn: HP:0000252, HP:0001263, HP:0001999"></textarea></div>
+  </div>
+
+  <!-- Test Bilgileri -->
+  <div class="form-sec">Test ve Platform Bilgileri</div>
+  <div class="form-grid">
+    <div class="form-group"><label class="form-lbl">Test Tipi</label><select class="form-inp" id="ptTestType"><option value="">Seçin</option><option>SNP-array</option><option>aCGH</option><option>Diğer</option></select></div>
+    <div class="form-group"><label class="form-lbl">Platform</label><input class="form-inp" id="ptPlatform" placeholder="Örn: CytoScan HD, Illumina GSA"></div>
+    <div class="form-group"><label class="form-lbl">Genome Build</label><select class="form-inp" id="ptBuild"><option value="GRCh38">GRCh38 / hg38</option><option value="GRCh37">GRCh37 / hg19</option></select></div>
+    <div class="form-group"><label class="form-lbl">Ebeveyn Testi Durumu</label><select class="form-inp" id="ptParent"><option value="">Seçin</option><option>Her iki ebeveyn test edildi</option><option>Yalnız anne test edildi</option><option>Yalnız baba test edildi</option><option>Ebeveyn testi yapılmadı</option><option>Bilgi yok</option></select></div>
+  </div>
+
+  <!-- CNV Bilgileri -->
+  <div class="form-sec">CNV Bilgileri</div>
+  <div class="form-grid">
+    <div class="form-group"><label class="form-lbl">CNV Tipi</label><select class="form-inp" id="ptCnvType"><option value="">Seçin</option><option value="del">Delesyon</option><option value="dup">Duplikasyon</option><option value="roh">ROH</option><option value="cnloh">CN-LOH</option><option value="other">Diğer</option></select></div>
+    <div class="form-group"><label class="form-lbl">CNV Koordinatı</label><input class="form-inp" id="ptCoord" placeholder="Örn: chr15:22646694-23086471"></div>
+    <div class="form-group"><label class="form-lbl">CNV Boyutu</label><input class="form-inp" id="ptSize" placeholder="Örn: 440 kb"></div>
+    <div class="form-group"><label class="form-lbl">Laboratuvar Sınıfı</label><select class="form-inp" id="ptLabClass"><option value="">Seçin</option><option>Patojenik</option><option>Olası Patojenik</option><option>VUS</option><option>Olası Benign</option><option>Benign</option><option>Belirtilmemiş</option></select></div>
+    <div class="form-group full"><label class="form-lbl">Etkilenen Gen(ler)</label><input class="form-inp" id="ptGenes" placeholder="Örn: SNRPN, UBE3A, MAGEL2"></div>
+    <div class="form-group"><label class="form-lbl">Sitogenetik Bant (Cytoband)</label><input class="form-inp" id="ptCytoband" placeholder="Örn: 15q11.2-q13.1"></div>
+    <div class="form-group"><label class="form-lbl">Kopya Sayısı Durumu</label><select class="form-inp" id="ptCopyState"><option value="">Seçin</option><option>Tek kopya kaybı (1×)</option><option>Tek kopya kazanımı (3×)</option><option>Triplikasyon (4×)</option><option>Mozaik</option><option>Bilinmiyor</option></select></div>
+    <div class="form-group"><label class="form-lbl">ISCN Notasyonu</label><input class="form-inp" id="ptISCN" placeholder="Örn: arr[GRCh38] 15q11.2q13.1(22646694_28438266)x1"></div>
+    <div class="form-group"><label class="form-lbl">Protein-Kodlayan Gen Sayısı</label><input class="form-inp" id="ptGeneCount" placeholder="Örn: 12"></div>
+    <div class="form-group"><label class="form-lbl">İntragenik ise: Transkript / Ekzon(lar)</label><input class="form-inp" id="ptTranscript" placeholder="Örn: NM_000310.4, ekzon 3-7"></div>
+    <div class="form-group"><label class="form-lbl">Raporlama Kategorisi</label><select class="form-inp" id="ptReportCat"><option value="">Seçin</option><option>Primer tanısal bulgu</option><option>Sekonder / tesadüfi bulgu</option><option>Taşıyıcılık bulgusu</option><option>Klinik bağlamla ilişkisi belirsiz</option></select></div>
+  </div>
+
+  <!-- Kullanım Tercihleri -->
+  <div class="form-sec">Kullanım Tercihleri</div>
+  <div class="form-grid">
+    <div class="form-group"><label class="form-lbl">Kullanım Modu</label><select class="form-inp" id="ptMode" onchange="applyMode(this.value)"><option value="egitim">Eğitim Modu</option><option value="klinik">Klinik Hızlı Değerlendirme</option><option value="raporlama">Raporlama Modu</option></select></div>
+    <div class="form-group"><label class="form-lbl">Çıktı Tercihi</label><select class="form-inp" id="ptOutput"><option value="dosya">Hasta dosyası özeti</option><option value="konsey">Konsey sunumu</option><option value="rapor">Klinik rapor notu</option><option value="egitim">Eğitim çıktısı</option></select></div>
+    <div class="form-group"><label class="form-lbl">Açıklama Düzeyi</label><select class="form-inp" id="ptExplainLevel"><option value="orta">Orta — karar + gerekçe + eksik kanıt</option><option value="kisa">Kısa — yalnızca karar, puan ve kısa klinik çıkarım</option><option value="detayli">Detaylı — eğitim açıklaması + mekanizma + sık hata uyarıları</option></select></div>
+  </div>
+
+  <div class="note note-blue" style="margin-top:18px">
+    <span class="note-icon">i</span>
+    <span>Bu bilgiler yalnızca tarayıcı oturumunuzda saklanır. Sayfa kapatıldığında silinir. Hiçbir hasta verisi sunucuya gönderilmez veya yerel depolamaya yazılmaz.</span>
+  </div>
+
+  <div class="step-nav">
+    <span class="step-ctr">Olgu Kartı</span>
+    <div class="nav-btns"><button class="btn-primary btn" onclick="saveAndContinue()">Kaydet ve Devam Et →</button></div>
+  </div>
+</div>
+
+<!-- ═══════════ ADIM 0: TEKNİK DOĞRULAMA ═══════════ -->
+<div class="main step-card" id="step0">
+  <div class="eyebrow">Teknik Doğrulama</div>
+  <div class="page-title">Platform, Build ve QC Kontrolü</div>
+  <div class="page-lead">Yorumlama öncesi teknik güvenilirlik kontrolü. Platform ve build uyumsuzluğu tüm değerlendirmeyi geçersiz kılar.</div>
+
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Platform</span><div><div class="panel-title">aCGH mi, SNP-array mi?</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>Platform</th><th>Log2 Ratio</th><th>BAF</th><th>Klinik Çıkarım</th></tr></thead>
+    <tbody>
+      <tr><td>aCGH</td><td>Var</td><td>Yok</td><td>ROH/UPD/mozaiklik değerlendirilemez</td></tr>
+      <tr><td>SNP-array</td><td>Var</td><td>Var</td><td>ROH, CN-LOH, UPD şüphesi değerlendirilebilir</td></tr>
+    </tbody></table>
+    <button class="edu-toggle" onclick="tEdu(this)">▸ Eğitim açıklaması</button>
+    <div class="edu-box"><p>SNP-array'de BAF verisi ROH bölgelerin tespitini sağlar. Büyük tek kromozomal ROH bölge UPD şüphesini düşündürür; genomda yaygın ROH ise konsanguiniteyi işaret eder. aCGH'de bu bilgi mevcut değildir.</p></div>
+  </div></div>
+
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Build</span><div><div class="panel-title">Genome Build — GRCh37 / GRCh38</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>Build</th><th>DECIPHER Sorgusu</th><th>İşlem</th></tr></thead>
+    <tbody>
+      <tr><td>GRCh37 / hg19</td><td><code>grch37:</code> ön eki gerekli</td><td>Koordinat başına ön ek ekleyin</td></tr>
+      <tr><td>GRCh38 / hg38</td><td>Varsayılan</td><td>Doğrudan yapıştırın</td></tr>
+    </tbody></table>
+    <div class="note note-amber"><span class="note-icon">!</span><span>Build belirtilmemiş raporlarda yorumlama başlatmayın. GRCh37 ile GRCh38 arasında koordinat farkı megabaz düzeyine ulaşabilir.</span></div>
+  </div></div>
+
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">QC</span><div><div class="panel-title">Kalite Kontrol ve Akreditasyon</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>Durum</th><th>Önerilen İşlem</th></tr></thead>
+    <tbody>
+      <tr><td>QC başarılı + akrediteli lab (CAP/ISO)</td><td>Değerlendirmeye geçin</td></tr>
+      <tr><td>QC başarısız / belirsiz</td><td>Değerlendirme başlatmayın — laboratordan açıklama isteyin</td></tr>
+      <tr><td>Akreditasyon bilgisi yok</td><td>Sınıflamayı bağımsız doğrulayın</td></tr>
+    </tbody></table>
+  </div></div>
+
+  <div class="step-nav"><span class="step-ctr">II / 15</span><div class="nav-btns"><button class="btn" onclick="goTo(-1)">← Olgu Kartı</button><button class="btn-primary btn" onclick="goTo(1)">CNV Triaj →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM 1: TRİAJ ═══════════ -->
+<div class="main step-card" id="step1">
+  <div class="eyebrow">CNV Triaj</div>
+  <div class="page-title">Laboratuvar Sınıfına Göre Ön Eleme</div>
+  <div class="page-lead">Rapordaki tüm CNV'leri değerlendirin. Lab sınıfına göre ilk triaj kararı verin.</div>
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Triaj</span><div><div class="panel-title">Lab sınıfına göre karar matrisi</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>Lab Sınıfı</th><th>Önerilen İşlem</th><th>İstisna</th></tr></thead>
+    <tbody>
+      <tr><td>B / LB</td><td>Klinik anlamlılığı yok olarak değerlendir</td><td>Beklenmedik ROH, UPD şüphesi, mozaiklik</td></tr>
+      <tr><td>P / LP</td><td>Bağımsız doğrulama için puanlamaya geç</td><td>Uncoupled ilkesi: başvuru nedeni sınıfı değiştirmez</td></tr>
+      <tr><td>VUS</td><td>Puanlamaya geç — bağımsız sınıfla</td><td>Ek kanıtla P veya B yönüne kayabilir</td></tr>
+    </tbody></table>
+    <div class="note note-amber"><span class="note-icon">!</span><span><strong>ACMG Uncoupled İlkesi:</strong> CNV sınıfı hastadan bağımsızdır. Aynı CNV her hastada aynı sınıfı alır. Başvuru nedeni sınıfı değiştiremez.</span></div>
+  </div></div>
+  <div class="step-nav"><span class="step-ctr">III / 15</span><div class="nav-btns"><button class="btn" onclick="goTo(0)">← Teknik</button><button class="btn-primary btn" onclick="goTo(2)">Puanlamaya Başla →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM 2: SECTION 1 ═══════════ -->
+<div class="main step-card" id="step2">
+  <div class="eyebrow">Section 1 · Puanlama</div>
+  <div class="page-title">Protein-Kodlayan Gen İçeriği</div>
+  <div class="page-lead">CNV bölgesi protein-kodlayan gen veya bilinen fonksiyonel element içeriyor mu? Bu karar hem delesyon hem duplikasyon için geçerlidir.</div>
+  <div class="tool-list">
+    <div class="tool-row"><div class="tool-name">UCSC Genome Browser</div><div class="tool-desc">Koordinat gir → RefSeq Genes track → bölgedeki genleri listele</div><div class="tool-link"><a href="https://genome.ucsc.edu" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">Ensembl</div><div class="tool-desc">Gen, transkript ve Ensembl ID listesi</div><div class="tool-link"><a href="https://ensembl.org" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">Franklin</div><div class="tool-desc">CNV yüklenince gen içeriğini otomatik tespit eder</div><div class="tool-link"><a href="https://franklin.genoox.com" target="_blank">Aç ↗</a></div></div>
+  </div>
+  <div class="score-box">
+    <div class="score-hdr"><span class="score-label">Section 1 — Seçiminizi yapın</span><span class="score-pts zero" id="s1pts">0.00</span></div>
+    <div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s1','1A',0,'İntragenik CNV: her iki breakpoint aynı gen içinde. Section 2E veya 2I kriterlerine geçin.',this)"><div class="co-radio"></div><div class="co-text"><strong>1A — İntragenik CNV:</strong> Her iki breakpoint aynı gen içinde → Section 2E veya 2I</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s1','1Ab',0,'Protein-kodlayan gen var. Değerlendirmeye devam edin.',this)"><div class="co-radio"></div><div class="co-text"><strong>1A — Gen var:</strong> CNV protein-kodlayan gen veya bilinen fonksiyonel element içeriyor</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s1','1B',-0.60,'Gen yok: −0.60 puan. Benign yönünde kanıt.',this)"><div class="co-radio"></div><div class="co-text"><strong>1B — Gen yok:</strong> CNV protein-coding veya fonksiyonel element içermiyor</div><div class="co-pts neg">−0.60</div></div>
+    </div>
+  </div>
+  <div class="feedback-box" id="s1-fb"></div>
+  <div class="step-nav"><span class="step-ctr">1 / 5</span><div class="nav-btns"><button class="btn" onclick="goTo(1)">← Triaj</button><button class="btn-primary btn" onclick="goTo(3)">Section 2 →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM 3: SECTION 2 ═══════════ -->
+<div class="main step-card" id="step3">
+  <div class="eyebrow">Section 2 · Puanlama</div>
+  <div class="page-title">Bilinen HI/TS ve Benign Bölgelerle Overlap</div>
+  <div class="page-lead">En ağırlıklı adım. Tek kriter +1.00 veya −1.00 vererek sınıfı doğrudan belirleyebilir.</div>
+  <div class="tool-list">
+    <div class="tool-row"><div class="tool-name">ClinGen Dosage Map</div><div class="tool-desc">Gen/bölge bazında HI (0–3) ve TS (0–3) skorları</div><div class="tool-link"><a href="https://dosage.clinicalgenome.org" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">GenCC</div><div class="tool-desc">Gen-hastalık validite konsensüs düzeyi</div><div class="tool-link"><a href="https://thegencc.org" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">DECIPHER Genes</div><div class="tool-desc">ClinGen dosage, pLI, LOEUF, sHet, %HI bir arada</div><div class="tool-link"><a href="https://www.deciphergenomics.org/search/patients" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">Franklin</div><div class="tool-desc">Section 2 otomatik puanlama</div><div class="tool-link"><a href="https://franklin.genoox.com" target="_blank">Aç ↗</a></div></div>
+  </div>
+  <div class="score-box">
+    <div class="score-hdr"><span class="score-label">Section 2 — Önce CNV tipini seçin</span><span class="score-pts zero" id="s2pts">0.00</span></div>
+    <div class="choice-opts" id="cnvTypeOpts" style="margin-bottom:14px;flex-direction:row;flex-wrap:wrap;gap:8px">
+      <div class="choice-opt" onclick="setCNVType('del',this)" style="max-width:180px"><div class="co-radio"></div><div class="co-text"><strong>DEL</strong> — Delesyon</div></div>
+      <div class="choice-opt" onclick="setCNVType('dup',this)" style="max-width:180px"><div class="co-radio"></div><div class="co-text"><strong>DUP</strong> — Duplikasyon</div></div>
+    </div>
+    <div id="del-choices" style="display:none"><div class="choice-lbl">Delesyon — Section 2</div><div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s2','2A',1.0,'2A: Tam HI overlap. +1.00 → Patojenik eşiği aşıldı!',this)"><div class="co-radio"></div><div class="co-text"><strong>2A</strong> — Tam overlap, established HI gen/bölge</div><div class="co-pts pos">+1.00</div></div>
+      <div class="choice-opt" onclick="pick('s2','2B',0,'2B: Kısmi overlap, kritik gen etkilenmiyor.',this)"><div class="co-radio"></div><div class="co-text"><strong>2B</strong> — Kısmi overlap, kritik gen/bölge etkilenmiyor</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2C1',0.90,'2C-1: 5′ uç, coding seq içeriyor. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>2C-1</strong> — 5′ uç overlap, coding sequence içeriyor</div><div class="co-pts pos">+0.90</div></div>
+      <div class="choice-opt" onclick="pick('s2','2C2',0,'2C-2: Yalnızca 5′ UTR. Varsayılan 0; gerekçe varsa ek puan verin.',this)"><div class="co-radio"></div><div class="co-text"><strong>2C-2</strong> — 5′ uç overlap, yalnızca 5′ UTR (varsayılan 0; gerekçe ile 0–0.45 arası)</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2D1',0,'2D-1: Yalnızca 3′ UTR etkileniyor.',this)"><div class="co-radio"></div><div class="co-text"><strong>2D-1</strong> — Yalnızca 3′ UTR etkileniyor</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2D2',0.90,'2D-2: Son ekzon, bilinen P varyant var. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>2D-2</strong> — Son ekzon; bilinen patojenik varyant var</div><div class="co-pts pos">+0.90</div></div>
+      <div class="choice-opt" onclick="pick('s2','2D3',0.30,'2D-3: Son ekzon, bilinen P varyant yok. +0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>2D-3</strong> — Son ekzon; bilinen patojenik varyant yok</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s2','2D4',0.90,'2D-4: Son ekzon + ek ekzonlar, NMD bekleniyor. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>2D-4</strong> — Son ekzon + ek ekzonlar; NMD bekleniyor</div><div class="co-pts pos">+0.90</div></div>
+      <div class="choice-opt" onclick="pick('s2','2E',0.90,'2E: İntragenik, PVS1 tam güç. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>2E</strong> — İntragenik (her iki bp aynı gen); PVS1 tam güç</div><div class="co-pts pos">+0.90</div></div>
+      <div class="choice-opt" onclick="pick('s2','2E_s',0.45,'2E: İntragenik, PVS1_Strong. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>2E</strong> — İntragenik; PVS1_Strong</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s2','2E_m',0.30,'2E: İntragenik, PVS1_Moderate. +0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>2E</strong> — İntragenik; PVS1_Moderate</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s2','2E_sup',0.15,'2E: İntragenik, PVS1_Supporting. +0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>2E</strong> — İntragenik; PVS1_Supporting</div><div class="co-pts pos">+0.15</div></div>
+      <div class="choice-opt" onclick="pick('s2','2E_na',0,'2E: İntragenik, PVS1 N/A. 0',this)"><div class="co-radio"></div><div class="co-text"><strong>2E</strong> — İntragenik; PVS1 uygulanamaz (N/A)</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2F',-1.0,'2F: Tam benign overlap. −1.00 → Benign!',this)"><div class="co-radio"></div><div class="co-text"><strong>2F</strong> — Tamamen bilinen benign bölge içinde</div><div class="co-pts neg">−1.00</div></div>
+      <div class="choice-opt" onclick="pick('s2','2G',0,'2G: Benign + ek materyal.',this)"><div class="co-radio"></div><div class="co-text"><strong>2G</strong> — Benign bölge overlap + ek genomik materyal</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2H',0.15,'2H: ≥2 HI predictor HI öneriyor. +0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>2H</strong> — ≥2 HI predictor en az 1 gen için HI öneriyor</div><div class="co-pts pos">+0.15</div></div>
+      <div class="choice-opt" onclick="pick('s2','2none',0,'Hiçbiri uygun değil. Section 3 ile devam edin.',this)"><div class="co-radio"></div><div class="co-text"><strong>Hiçbiri uygun değil</strong></div><div class="co-pts zero">0</div></div>
+    </div></div>
+    <div id="dup-choices" style="display:none"><div class="choice-lbl">Duplikasyon — Section 2</div><div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s2','2A_d',1.0,'2A DUP: Tam TS overlap. +1.00',this)"><div class="co-radio"></div><div class="co-text"><strong>2A</strong> — Tam overlap, established TS gen/bölge</div><div class="co-pts pos">+1.00</div></div>
+      <div class="choice-opt" onclick="pick('s2','2B_d',0,'2B DUP: Kısmi overlap.',this)"><div class="co-radio"></div><div class="co-text"><strong>2B</strong> — Kısmi overlap, TS bölgenin tamamı kapsanmıyor</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2C_d',-1.0,'2C DUP: Bilinen benign DUP. −1.00',this)"><div class="co-radio"></div><div class="co-text"><strong>2C</strong> — Bilinen benign DUP ile aynı gen içeriği</div><div class="co-pts neg">−1.00</div></div>
+      <div class="choice-opt" onclick="pick('s2','2D_d',-1.0,'2D DUP: Benign DUP'tan küçük, bp gen kesmiyor. −1.00',this)"><div class="co-radio"></div><div class="co-text"><strong>2D</strong> — Bilinen benign DUP'tan küçük; bp gen kesmez</div><div class="co-pts neg">−1.00</div></div>
+      <div class="choice-opt" onclick="pick('s2','2E_d',0,'2E DUP: Benign DUP'tan küçük ama bp gen kesiyor.',this)"><div class="co-radio"></div><div class="co-text"><strong>2E</strong> — Bilinen benign DUP'tan küçük; bp gen kesiyor</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2F_d',-1.0,'2F DUP: Benign DUP'tan büyük.',this)"><div class="co-radio"></div><div class="co-text"><strong>2F</strong> — Benign DUP'tan büyük, ek protein-kodlayan gen içermiyor</div><div class="co-pts neg">−1.00</div></div>
+      <div class="choice-opt" onclick="pick('s2','2G_d',0,'2G DUP: Overlap yok.',this)"><div class="co-radio"></div><div class="co-text"><strong>2G</strong> — Bilinen benign veya TS bölgeyle overlap yok</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2H_d',0,'2H DUP: HI gen tam kapsanıyor. Devam edin (puan 0).',this)"><div class="co-radio"></div><div class="co-text"><strong>2H</strong> — HI gen(ler) tam kapsanıyor (tüm coding dahil). Devam edin.</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2I_d',0.90,'2I DUP: İntragenik, PVS1 tam güç. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>2I</strong> — İntragenik DUP, her iki bp aynı HI gen; PVS1 tam güç</div><div class="co-pts pos">+0.90</div></div>
+      <div class="choice-opt" onclick="pick('s2','2I_d_s',0.45,'2I DUP: İntragenik, PVS1_Strong. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>2I</strong> — İntragenik DUP, aynı HI gen; PVS1_Strong</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s2','2I_d_na',0,'2I DUP: İntragenik, PVS1 N/A. 0',this)"><div class="co-radio"></div><div class="co-text"><strong>2I</strong> — İntragenik DUP, aynı HI gen; PVS1 N/A</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2J_d',0,'2J DUP: İntragenik, predicted TS değil.',this)"><div class="co-radio"></div><div class="co-text"><strong>2J</strong> — İntragenik DUP; predicted TS değil; bp gen bozabilir</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2K_d',0.45,'2K DUP: Bir bp HI gende, fenotip LOF uyumlu. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>2K</strong> — Bir breakpoint HI gende; fenotip LOF ile uyumlu</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s2','2L_d',0,'2L DUP: Bir bp gen kesiyor ama HI/TS değil.',this)"><div class="co-radio"></div><div class="co-text"><strong>2L</strong> — Bir breakpoint gen kesiyor; gen HI/TS değil</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s2','2none_d',0,'Hiçbiri uygun değil.',this)"><div class="co-radio"></div><div class="co-text"><strong>Hiçbiri uygun değil</strong></div><div class="co-pts zero">0</div></div>
+    </div></div>
+  </div>
+  <div class="feedback-box" id="s2-fb"></div>
+  <div class="step-nav"><span class="step-ctr">2 / 5</span><div class="nav-btns"><button class="btn" onclick="goTo(2)">← Section 1</button><button class="btn-primary btn" onclick="goTo(4)">Section 3 →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM 4: SECTION 3 ═══════════ -->
+<div class="main step-card" id="step4">
+  <div class="eyebrow">Section 3 · Puanlama</div>
+  <div class="page-title">Gen Sayısı Değerlendirmesi</div>
+  <div class="page-lead">Section 2'de bilinen HI/TS overlap saptanmadıysa devreye girer. Büyük CNV'lerde gen sayısı tek başına patojenite lehine kanıt olabilir.</div>
+  <div class="score-box">
+    <div class="score-hdr"><span class="score-label">Section 3 — Gen sayısı</span><span class="score-pts zero" id="s3pts">0.00</span></div>
+    <div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s3','3A_d',0,'DEL 0–24 gen. Puan atanmıyor.',this)"><div class="co-radio"></div><div class="co-text"><strong>DEL 3A</strong> — 0–24 gen</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s3','3B_d',0.45,'DEL 25–34 gen. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>DEL 3B</strong> — 25–34 gen</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s3','3C_d',0.90,'DEL ≥35 gen. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>DEL 3C</strong> — ≥35 gen</div><div class="co-pts pos">+0.90</div></div>
+      <div class="choice-opt" onclick="pick('s3','3A_u',0,'DUP 0–34 gen.',this)"><div class="co-radio"></div><div class="co-text"><strong>DUP 3A</strong> — 0–34 gen</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s3','3B_u',0.45,'DUP 35–49 gen. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>DUP 3B</strong> — 35–49 gen</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s3','3C_u',0.90,'DUP ≥50 gen. +0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>DUP 3C</strong> — ≥50 gen</div><div class="co-pts pos">+0.90</div></div>
+    </div>
+  </div>
+  <div class="feedback-box" id="s3-fb"></div>
+  <div class="note note-amber"><span class="note-icon">!</span><span>DUP için eşik neden yüksek? Fazla kopya genellikle gen fonksiyonunu doğrudan bozmaz. Triplosensitivity çok daha nadir kanıtlanmıştır.</span></div>
+  <div class="step-nav"><span class="step-ctr">3 / 5</span><div class="nav-btns"><button class="btn" onclick="goTo(3)">← Section 2</button><button class="btn-primary btn" onclick="goTo(5)">Section 4 →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM 5: SECTION 4 ═══════════ -->
+<div class="main step-card" id="step5">
+  <div class="eyebrow">Section 4 · Puanlama</div>
+  <div class="page-title">Literatür, Veritabanı ve Popülasyon Kanıtı</div>
+  <div class="page-lead">Birden fazla kanıt türü bağımsız toplanır. Her alt bölümün ayrı tavanı vardır.</div>
+  <div class="tool-list">
+    <div class="tool-row"><div class="tool-name">DECIPHER Patients</div><div class="tool-desc">Benzer CNV'li hasta kayıtları, de novo/HPO filtresi</div><div class="tool-link"><a href="https://www.deciphergenomics.org/search/patients" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">ClinVar</div><div class="tool-desc">Önceki CNV sınıflandırmaları</div><div class="tool-link"><a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">OMIM</div><div class="tool-desc">Gen-fenotip eşleştirmesi ve kalıtım paterni</div><div class="tool-link"><a href="https://omim.org" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">gnomAD-SV</div><div class="tool-desc">Popülasyon frekans verisi</div><div class="tool-link"><a href="https://gnomad.broadinstitute.org" target="_blank">Aç ↗</a></div></div>
+    <div class="tool-row"><div class="tool-name">DGV</div><div class="tool-desc">Benign yapısal varyant arşivi</div><div class="tool-link"><a href="https://dgv.tcag.ca" target="_blank">Aç ↗</a></div></div>
+  </div>
+
+  <!-- 4A-4E: De novo / Vaka Kanıtı -->
+  <div class="score-box">
+    <div class="score-hdr"><span class="score-label">Section 4A–4E — De Novo / Vaka Kanıtı</span><span class="score-pts zero" id="s4a_pts">0.00</span></div>
+    <div class="choice-opts">
+      <div class="choice-opt" onclick="pickS4a('4A_conf',0.45,this)"><div class="co-radio"></div><div class="co-text"><strong>4A</strong> — Confirmed de novo + yüksek özgüllüklü fenotip</div><div class="co-pts pos">+0.45/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4A_assu',0.30,this)"><div class="co-radio"></div><div class="co-text"><strong>4A</strong> — Assumed de novo + yüksek özgüllüklü fenotip</div><div class="co-pts pos">+0.30/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4B_conf',0.30,this)"><div class="co-radio"></div><div class="co-text"><strong>4B</strong> — Confirmed de novo + tutarlı ama özgül olmayan fenotip</div><div class="co-pts pos">+0.30/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4B_assu',0.15,this)"><div class="co-radio"></div><div class="co-text"><strong>4B</strong> — Assumed de novo + tutarlı ama özgül olmayan fenotip</div><div class="co-pts pos">+0.15/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4C_conf',0.15,this)"><div class="co-radio"></div><div class="co-text"><strong>4C</strong> — Confirmed de novo + nonspesifik fenotip</div><div class="co-pts pos">+0.15/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4C_assu',0.10,this)"><div class="co-radio"></div><div class="co-text"><strong>4C</strong> — Assumed de novo + nonspesifik fenotip</div><div class="co-pts pos">+0.10/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4D',0,this)"><div class="co-radio"></div><div class="co-text"><strong>4D</strong> — CNV tutarsız fenotipli olgularda gözlendi (toplam: 0 ile −0.30 arası)</div><div class="co-pts neg">0 / −0.30</div></div>
+      <div class="choice-opt" onclick="pickS4a('4E',0.10,this)"><div class="co-radio"></div><div class="co-text"><strong>4E</strong> — Kalıtım bilinmiyor; yüksek özgül fenotip</div><div class="co-pts pos">+0.10/vaka</div></div>
+      <div class="choice-opt" onclick="pickS4a('4none',0,this)"><div class="co-radio"></div><div class="co-text"><strong>Vaka kanıtı yok</strong></div><div class="co-pts zero">0</div></div>
+    </div>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <label style="font-size:13px;color:var(--txt2);font-weight:500">Vaka sayısı:</label>
+      <input type="number" id="s4aCaseCount" value="1" min="1" max="30" class="form-inp" style="width:64px;padding:6px 10px;font-size:13px" onchange="updateS4a()">
+      <span style="font-size:12px;color:var(--txt3)">Tavan: 4A–4C toplam ≤0.90 · 4D toplam ≥−0.30 · 4E toplam ≤0.30</span>
+    </div>
+  </div>
+  <div class="feedback-box" id="s4a-fb"></div>
+
+  <!-- 4F-4K: Segregasyon / Non-segregasyon -->
+  <div class="score-box" style="margin-top:14px">
+    <div class="score-hdr"><span class="score-label">Section 4F–4K — Segregasyon Kanıtı</span><span class="score-pts zero" id="s4seg_pts">0.00</span></div>
+    <div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s4seg','4F',0.15,'4F: 3–4 segregasyon gözlendi. +0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>4F</strong> — 3–4 benzer etkilenmiş aile üyesinde segregasyon</div><div class="co-pts pos">+0.15</div></div>
+      <div class="choice-opt" onclick="pick('s4seg','4G',0.30,'4G: 5–6 segregasyon gözlendi. +0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>4G</strong> — 5–6 benzer etkilenmiş aile üyesinde segregasyon</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s4seg','4H',0.45,'4H: ≥7 segregasyon gözlendi. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>4H</strong> — ≥7 benzer etkilenmiş aile üyesinde segregasyon</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s4seg','4I',-0.45,'4I: Etkilenmiş aile üyesinde varyant yok, spesifik fenotip. −0.45/aile (toplam −0.90)',this)"><div class="co-radio"></div><div class="co-text"><strong>4I</strong> — Etkilenmiş aile üyesinde varyant bulunamadı; spesifik fenotip</div><div class="co-pts neg">−0.45/aile</div></div>
+      <div class="choice-opt" onclick="pick('s4seg','4J',-0.30,'4J: Etkilenmemiş aile üyesinde varyant var, spesifik fenotip. −0.30/aile (toplam −0.90)',this)"><div class="co-radio"></div><div class="co-text"><strong>4J</strong> — Etkilenmemiş aile üyesinde varyant bulundu; spesifik fenotip</div><div class="co-pts neg">−0.30/aile</div></div>
+      <div class="choice-opt" onclick="pick('s4seg','4K',-0.15,'4K: Etkilenmemiş aile üyesinde varyant var, nonspesifik fenotip. −0.15/aile (toplam −0.30)',this)"><div class="co-radio"></div><div class="co-text"><strong>4K</strong> — Etkilenmemiş aile üyesinde varyant bulundu; nonspesifik fenotip</div><div class="co-pts neg">−0.15/aile</div></div>
+      <div class="choice-opt" onclick="pick('s4seg','4seg_none',0,'Segregasyon verisi yok.',this)"><div class="co-radio"></div><div class="co-text"><strong>Segregasyon verisi yok</strong></div><div class="co-pts zero">0</div></div>
+    </div>
+  </div>
+  <div class="feedback-box" id="s4seg-fb"></div>
+
+  <!-- 4L-4O + 4M: Popülasyon / Case-Control -->
+  <div class="score-box" style="margin-top:14px">
+    <div class="score-hdr"><span class="score-label">Section 4L–4O — Popülasyon ve Case-Control</span><span class="score-pts zero" id="s4b_pts">0.00</span></div>
+    <div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s4b','4L',0.45,'4L: Case-control anlamlı artış, spesifik fenotip. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>4L</strong> — Case-control: spesifik fenotipte istatistiksel anlamlı artış</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s4b','4M',0.30,'4M: Case-control anlamlı artış, nonspesifik fenotip. +0.30 (toplam ≤0.45)',this)"><div class="co-radio"></div><div class="co-text"><strong>4M</strong> — Case-control: nonspesifik fenotipte anlamlı artış (+0.30/çalışma, toplam ≤0.45)</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s4b','4N',-0.90,'4N: Case-control fark yok. −0.90',this)"><div class="co-radio"></div><div class="co-text"><strong>4N</strong> — Case-control: istatistiksel fark yok</div><div class="co-pts neg">−0.90</div></div>
+      <div class="choice-opt" onclick="pick('s4b','4O',-1.0,'4O: Popülasyonda >%1. −1.00',this)"><div class="co-radio"></div><div class="co-text"><strong>4O</strong> — Popülasyonda >%1 sıklık (gnomAD-SV / DGV)</div><div class="co-pts neg">−1.00</div></div>
+      <div class="choice-opt" onclick="pick('s4b','4pop_none',0,'Popülasyon verisi yok.',this)"><div class="co-radio"></div><div class="co-text"><strong>Popülasyon verisi yok</strong></div><div class="co-pts zero">0</div></div>
+    </div>
+  </div>
+  <div class="feedback-box" id="s4b-fb"></div>
+
+  <div class="step-nav"><span class="step-ctr">4 / 5</span><div class="nav-btns"><button class="btn" onclick="goTo(4)">← Section 3</button><button class="btn-primary btn" onclick="goTo(6)">Section 5 →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM 6: SECTION 5 ═══════════ -->
+<div class="main step-card" id="step6">
+  <div class="eyebrow">Section 5 · Puanlama</div>
+  <div class="page-title">Hastanın Kalıtım Bilgisi</div>
+  <div class="page-lead">Bu section klinisyen tarafından doldurulur. Ebeveyn testi yapılmadan de novo varsayılamaz.</div>
+  <div class="score-box">
+    <div class="score-hdr"><span class="score-label">Section 5 — Kalıtım durumu</span><span class="score-pts zero" id="s5pts">0.00</span></div>
+    <div class="choice-opts">
+      <div class="choice-opt" onclick="pick('s5','5A',0.45,'5A: De novo teyitli, yüksek özgül fenotip. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>5A</strong> — De novo teyitli; fenotip yüksek özgüllükle uyumlu</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s5','5A2',0.30,'5A: De novo teyitli, tutarlı fenotip. +0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>5A</strong> — De novo teyitli; fenotip tutarlı ama özgül değil</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s5','5B',-0.30,'5B: Etkilenmemiş ebeveynden kalıtım. −0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>5B</strong> — Etkilenmemiş ebeveynden kalıtım; fenotip spesifik</div><div class="co-pts neg">−0.30</div></div>
+      <div class="choice-opt" onclick="pick('s5','5C',-0.15,'5C: Etkilenmemiş ebeveynden, nonspesifik. −0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>5C</strong> — Etkilenmemiş ebeveynden kalıtım; nonspesifik</div><div class="co-pts neg">−0.15</div></div>
+      <div class="choice-opt" onclick="pick('s5','5D_34',0.15,'5D: 3–4 segregasyon. +0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>5D</strong> — Aile içi segregasyon: 3–4 etkilenmiş üye</div><div class="co-pts pos">+0.15</div></div>
+      <div class="choice-opt" onclick="pick('s5','5D_56',0.30,'5D: 5–6 segregasyon. +0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>5D</strong> — Aile içi segregasyon: 5–6 etkilenmiş üye</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s5','5D_7',0.45,'5D: ≥7 segregasyon. +0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>5D</strong> — Aile içi segregasyon: ≥7 etkilenmiş üye</div><div class="co-pts pos">+0.45</div></div>
+      <div class="choice-opt" onclick="pick('s5','5E_i',-0.45,'5E: Etkilenmiş aile üyesinde varyant yok. −0.45',this)"><div class="co-radio"></div><div class="co-text"><strong>5E</strong> — Non-segregasyon: etkilenmiş aile üyesinde varyant bulunamadı (4I referans)</div><div class="co-pts neg">−0.45</div></div>
+      <div class="choice-opt" onclick="pick('s5','5E_j',-0.30,'5E: Etkilenmemiş üyede varyant var, spesifik fenotip. −0.30',this)"><div class="co-radio"></div><div class="co-text"><strong>5E</strong> — Non-segregasyon: etkilenmemiş üyede varyant bulundu, spesifik fenotip (4J referans)</div><div class="co-pts neg">−0.30</div></div>
+      <div class="choice-opt" onclick="pick('s5','5E_k',-0.15,'5E: Etkilenmemiş üyede varyant var, nonspesifik. −0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>5E</strong> — Non-segregasyon: etkilenmemiş üyede varyant bulundu, nonspesifik (4K referans)</div><div class="co-pts neg">−0.15</div></div>
+      <div class="choice-opt" onclick="pick('s5','5F',0,'5F: Kalıtım bilgisi yok.',this)"><div class="co-radio"></div><div class="co-text"><strong>5F</strong> — Kalıtım bilgisi yok / bilgilendirici değil</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s5','5G',0.10,'5G: Kalıtım bilgisi yok; fenotip nonspesifik ama benzer vakalarla tutarlı. +0.10',this)"><div class="co-radio"></div><div class="co-text"><strong>5G</strong> — Kalıtım bilgisi yok; fenotip nonspesifik ama benzer vakalarla tutarlı (0–0.15)</div><div class="co-pts pos">+0.10</div></div>
+      <div class="choice-opt" onclick="pick('s5','5H',0.30,'5H: Kalıtım bilinmiyor, fenotip çok uyumlu. +0.30 (DEL); DUP için +0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>5H</strong> — Kalıtım bilinmiyor; fenotip yüksek özgül ve uyumlu</div><div class="co-pts pos">+0.30</div></div>
+    </div>
+  </div>
+  <div class="feedback-box" id="s5-fb"></div>
+  <div class="note note-red"><span class="note-icon">!</span><span>Ebeveyn testi yapılmadan de novo varsayılamaz. Ebeveyn mevcut ve test edilmemişse, önce ebeveyn çalışması isteyin.</span></div>
+  <div class="step-nav"><span class="step-ctr">5 / 5</span><div class="nav-btns"><button class="btn" onclick="goTo(5)">← Section 4</button><button class="btn-primary btn" onclick="showResult()">Sonuç ve Rapor →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIMLAR 7–13 ═══════════ -->
+<div class="main step-card" id="step7">
+  <div class="eyebrow">Skor Hesaplama</div>
+  <div class="page-title">Toplam Puan ve ACMG/ClinGen Sınıfı</div>
+  <div class="page-lead">Section puanları toplanır. Sonuç, aşağıdaki eşiklere göre sınıflandırılır.</div>
+  <table class="tbl"><thead><tr><th>Puan</th><th>Sınıf</th><th>Güven Düzeyi</th></tr></thead>
+  <tbody>
+    <tr><td class="pos">≥ 0.99</td><td><strong>Patojenik (P)</strong></td><td>%99</td></tr>
+    <tr><td class="pos">0.90–0.98</td><td><strong>Olası Patojenik (LP)</strong></td><td>%90</td></tr>
+    <tr><td class="neu">−0.89 – +0.89</td><td><strong>VUS</strong></td><td>Belirsiz</td></tr>
+    <tr><td class="neg">−0.90 – −0.98</td><td><strong>Olası Benign (LB)</strong></td><td>%90 benign</td></tr>
+    <tr><td class="neg">≤ −0.99</td><td><strong>Benign (B)</strong></td><td>%99 benign</td></tr>
+  </tbody></table>
+  <div class="tool-list"><div class="tool-row"><div class="tool-name">ClinGen CNV Calculator</div><div class="tool-desc">Resmi hesaplama aracı</div><div class="tool-link"><a href="https://cnvcalc.clinicalgenome.org/cnvcalc/" target="_blank">Aç ↗</a></div></div></div>
+  <div class="step-nav"><span class="step-ctr">Değ. 1/5</span><div class="nav-btns"><button class="btn" onclick="goTo(6)">← Section 5</button><button class="btn-primary btn" onclick="goTo(8)">Franklin →</button></div></div>
+</div>
+
+<div class="main step-card" id="step8">
+  <div class="eyebrow">Franklin Kontrolü</div>
+  <div class="page-title">Franklin Çıktısıyla Karşılaştırma</div>
+  <div class="page-lead">Franklin Section bazında otomatik puanlama yapar. Kendi puanınızla karşılaştırarak tutarlılık kontrolü yapın.</div>
+  <table class="tbl"><thead><tr><th>Durum</th><th>Önerilen İşlem</th></tr></thead>
+  <tbody>
+    <tr><td>Uyuşuyor</td><td>Devam edin. Güven arttı.</td></tr>
+    <tr><td>Franklin daha yüksek</td><td>Hangi section farklı? İnternal kürasyon farkı olabilir.</td></tr>
+    <tr><td>Franklin daha düşük</td><td>Eklediğiniz lokal kanıt Franklin'de yok olabilir.</td></tr>
+  </tbody></table>
+  <div class="note note-amber"><span class="note-icon">!</span><span>Franklin global sınıf verir — AD/AR ayrımı yapmaz. Zygosity + kalıtım paterni + fenotip uyumunu klinisyen değerlendirir.</span></div>
+  <div class="step-nav"><span class="step-ctr">Değ. 2/5</span><div class="nav-btns"><button class="btn" onclick="goTo(7)">← Skor</button><button class="btn-primary btn" onclick="goTo(9)">Korelasyon →</button></div></div>
+</div>
+
+<div class="main step-card" id="step9">
+  <div class="eyebrow">Klinik Korelasyon</div>
+  <div class="page-title">Fenotip Uyumu — Tanısal Değerlendirme</div>
+  <div class="page-lead">Varyant sınıflaması hasta bağımsız yapıldı. Şimdi "bu CNV bu hastayı açıklıyor mu?" sorusunu ayrıca yanıtlayın.</div>
+  <table class="tbl"><thead><tr><th>CNV Sınıfı</th><th>Fenotip Uyumu</th><th>Klinik Anlamlılık</th></tr></thead>
+  <tbody>
+    <tr><td>P / LP</td><td>Uyumlu</td><td>Primer tanısal bulgu. Sendrom-spesifik takip başlatılır.</td></tr>
+    <tr><td>P / LP</td><td>Uyumsuz</td><td>İnsidental bulgu — raporlanır, sınıf değişmez.</td></tr>
+    <tr><td>VUS</td><td>Çok uyumlu</td><td>Ebeveyn çalışması önerin. WES/WGS trio düşünün.</td></tr>
+    <tr><td>VUS</td><td>Uyumsuz</td><td>Açıklayıcı değil. Yeniden değerlendirme listesine alın.</td></tr>
+    <tr><td>B / LB</td><td>—</td><td>Genellikle raporlanmaz.</td></tr>
+  </tbody></table>
+  <div class="step-nav"><span class="step-ctr">Değ. 3/5</span><div class="nav-btns"><button class="btn" onclick="goTo(8)">← Franklin</button><button class="btn-primary btn" onclick="goTo(10)">Raporlama →</button></div></div>
+</div>
+
+<div class="main step-card" id="step10">
+  <div class="eyebrow">Raporlama</div>
+  <div class="page-title">Raporlama Senaryoları</div>
+  <div class="page-lead">Section puanlarını ve klinik korelasyonu raporda belirtin.</div>
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-green">Senaryo 1</span><div><div class="panel-title">Açıklayıcı P / LP CNV</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body"><div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:5px;padding:14px;font-family:'Merriweather',serif;font-size:14px;color:var(--txt2);line-height:1.8">"Kromozomal mikroarray analizinde saptanan [arr(GRCh38) ChrXX:start-end × kopya sayısı], ACMG/ClinGen kriterlerine göre <strong>[patojenik / olası patojenik]</strong> olarak sınıflandırılmıştır (toplam skor: X.XX). Bu bulgu hastamızın fenotipiyle uyumlu olup birincil tanı açıklayıcı bulgu kabul edilmiştir."</div></div></div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-amber">Senaryo 2</span><div><div class="panel-title">Yüksek öncelikli VUS</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body"><div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:5px;padding:14px;font-family:'Merriweather',serif;font-size:14px;color:var(--txt2);line-height:1.8">"...CNV patojenite lehine kanıtlar içermektedir ancak mevcut verilerle <strong>VUS</strong> olarak sınıflandırılmıştır (skor: X.XX). Ebeveyn array çalışması ve/veya WES trio önerilir."</div></div></div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Senaryo 3</span><div><div class="panel-title">Açıklayıcı olmayan VUS</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body"><div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:5px;padding:14px;font-family:'Merriweather',serif;font-size:14px;color:var(--txt2);line-height:1.8">"...CNV <strong>VUS</strong> olarak sınıflandırılmıştır (skor: X.XX). Mevcut fenotipte korelasyon saptanmamıştır. Dosya yeniden değerlendirme listesine alınmıştır."</div></div></div>
+  <div class="step-nav"><span class="step-ctr">Değ. 4/5</span><div class="nav-btns"><button class="btn" onclick="goTo(9)">← Korelasyon</button><button class="btn-primary btn" onclick="goTo(11)">Takip →</button></div></div>
+</div>
+
+<div class="main step-card" id="step11">
+  <div class="eyebrow">Takip</div>
+  <div class="page-title">Takip ve Yeniden Değerlendirme</div>
+  <div class="page-lead">VUS'ları aktif izleyin. 12–24 ayda bir kaynakları kontrol edin. Yeni kanıt gelince puanı güncelleyin.</div>
+  <table class="tbl"><thead><tr><th>Durum</th><th>Önerilen Test</th></tr></thead>
+  <tbody>
+    <tr><td>İntragenik / breakpoint belirsiz</td><td>MLPA veya qPCR</td></tr>
+    <tr><td>ROH + imprinted kromozom</td><td>STR analizi / SNP array trio — UPD</td></tr>
+    <tr><td>VUS + açıklanmamış fenotip</td><td>WES / WGS trio</td></tr>
+    <tr><td>Mozaiklik şüphesi</td><td>FISH veya qPCR</td></tr>
+    <tr><td>De novo durumu bilinmiyor</td><td>Ebeveyn array veya MLPA</td></tr>
+    <tr><td>Doğrulama gereksinimi</td><td>İleri sitogenetik/moleküler doğrulama (FISH, MLPA, qPCR)</td></tr>
+    <tr><td>Aile değerlendirmesi</td><td>İlgili aile üyelerinin genetik değerlendirmesi</td></tr>
+    <tr><td>Genetik danışmanlık</td><td>Hasta/aile için genetik danışmanlık</td></tr>
+    <tr><td>VUS izlemi</td><td>Literatür ve veritabanı izlemi; periyodik yeniden değerlendirme (12–24 ay)</td></tr>
+  </tbody></table>
+  <div class="step-nav"><span class="step-ctr">Değ. 5/5</span><div class="nav-btns"><button class="btn" onclick="goTo(10)">← Raporlama</button><button class="btn-primary btn" onclick="goTo(12)">Kavramlar →</button></div></div>
+</div>
+
+<div class="main step-card" id="step12">
+  <div class="eyebrow">Kaynak</div>
+  <div class="page-title">Kavram Rehberi</div>
+  <div class="page-lead">Puanlama sürecinde karşılaşılan temel kavramların kısa tanımları.</div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-blue">Temel</span><div><div class="panel-title">Prob, Log2 Ratio, BAF</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <p>Her prob genomdaki belirli bir koordinata bağlanır ve o noktada kopya sayısını ölçer. <strong>Log2 Ratio:</strong> Normal 2 kopya = 0; delesyon &lt;0; duplikasyon &gt;0. <strong>BAF:</strong> Yalnızca SNP-array'de bulunur. Normal heterozigot bölgede 0, 0.5 ve 1 bantları görülür. 0.5 bandının kaybolması → CN-LOH → UPD şüphesi.</p>
+    <table class="tbl"><thead><tr><th>Kopya</th><th>Log2 (yaklaşık)</th></tr></thead>
+    <tbody><tr><td>0</td><td>−∞</td></tr><tr><td>1 (het DEL)</td><td>−0.58</td></tr><tr><td>2 (normal)</td><td>0</td></tr><tr><td>3 (DUP)</td><td>+0.58</td></tr></tbody></table>
+  </div></div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-blue">Homozigotluk</span><div><div class="panel-title">ROH · LOH · CN-LOH · UPD</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>Terim</th><th>Tanım</th><th>Kopya</th></tr></thead>
+    <tbody><tr><td>ROH / AOH</td><td>Uzun homozigot bölge</td><td>2</td></tr><tr><td>CN-LOH</td><td>Kopya sayısı normal, heterozigotluk yok</td><td>2</td></tr><tr><td>UPD</td><td>Her iki kopya aynı ebeveynden</td><td>2</td></tr></tbody></table>
+    <table class="tbl" style="margin-top:10px"><thead><tr><th>Kromozom</th><th>Maternal UPD</th><th>Paternal UPD</th></tr></thead>
+    <tbody>
+      <tr><td>15</td><td>Prader-Willi</td><td>Angelman</td></tr>
+      <tr><td>7</td><td>Silver-Russell</td><td>—</td></tr>
+      <tr><td>11p15</td><td>SRS (IC1 LOM; UPD nadir)</td><td>BWS (patUPD en sık)</td></tr>
+      <tr><td>14</td><td>Temple</td><td>Kagami-Ogata</td></tr>
+      <tr><td>20</td><td>—</td><td>PHP-Ib (GNAS)</td></tr>
+    </tbody></table>
+  </div></div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-amber">Dosaj</span><div><div class="panel-title">HI · TS · pLI · LOEUF · %HI</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>Metrik</th><th>Eşik</th><th>Çıkarım</th></tr></thead>
+    <tbody><tr><td>ClinGen HI Skoru 3</td><td>Sufficient evidence</td><td>Section 2'de güçlü puan</td></tr><tr><td>pLI</td><td>&gt;0.9</td><td>LOF intoleransı yüksek</td></tr><tr><td>LOEUF</td><td>≤0.35</td><td>LOF/beklenen oranı düşük</td></tr><tr><td>%HI</td><td>0–10%</td><td>DECIPHER'a özgü computed skor</td></tr></tbody></table>
+  </div></div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-green">Kriterler</span><div><div class="panel-title">PVS1 · NMD — İntragenik CNV Puanlama</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <table class="tbl"><thead><tr><th>PVS1 Düzeyi</th><th>Puan</th><th>Koşul</th></tr></thead>
+    <tbody><tr><td>PVS1 (tam)</td><td class="pos">+0.90</td><td>Out-of-frame DEL, NMD bekleniyor</td></tr><tr><td>PVS1_Strong</td><td class="pos">+0.45</td><td>In-frame DEL, HI gen</td></tr><tr><td>PVS1_Moderate</td><td class="pos">+0.30</td><td>In-frame, domain etkilenmiyor</td></tr><tr><td>PVS1_Supporting</td><td class="pos">+0.15</td><td>Zayıf NMD kanıtı</td></tr></tbody></table>
+    <p style="margin-top:8px">Son ekzondan önce erken stop kodon NMD'yi tetikler — RNA yok edilir. Son ekzondaki erken stop kodon NMD'den kaçabilir (3′ kuralı). Bu, 2D-3 ile 2D-4 arasındaki puan farkını açıklar.</p>
+  </div></div>
+  <div class="step-nav"><span class="step-ctr">Kaynak</span><div class="nav-btns"><button class="btn" onclick="goTo(11)">← Takip</button><button class="btn-primary btn" onclick="goTo(13)">Referanslar →</button></div></div>
+</div>
+
+<div class="main step-card" id="step13">
+  <div class="eyebrow">Kaynak</div>
+  <div class="page-title">Referanslar</div>
+  <div class="page-lead">Temel yayınlar ve veritabanları.</div>
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Yayınlar</span><div><div class="panel-title">Birincil kaynaklar</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <ul style="list-style:none;padding:0">
+      <li style="padding:8px 0;border-bottom:1.5px solid var(--border);font-size:13.5px;line-height:1.65"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt4);margin-right:8px">[1]</span>Riggs ER et al. Technical standards for the interpretation and reporting of constitutional copy-number variants. <em>Genet Med.</em> 2020;22(2):245-257.</li>
+      <li style="padding:8px 0;border-bottom:1.5px solid var(--border);font-size:13.5px;line-height:1.65"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt4);margin-right:8px">[2]</span>Firth HV et al. DECIPHER: Database of Chromosomal Imbalance and Phenotype in Humans. <em>Am J Hum Genet.</em> 2009;84(4):524-533.</li>
+      <li style="padding:8px 0;border-bottom:1.5px solid var(--border);font-size:13.5px;line-height:1.65"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt4);margin-right:8px">[3]</span>DiStefano MT et al. The Gene Curation Coalition. <em>Genet Med.</em> 2022;24(7):1567-1576.</li>
+      <li style="padding:8px 0;font-size:13.5px;line-height:1.65"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt4);margin-right:8px">[4]</span>Karczewski KJ et al. The mutational constraint spectrum. <em>Nature.</em> 2020;581:434-443.</li>
+    </ul>
+  </div></div>
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Veritabanları</span><div><div class="panel-title">Online kaynaklar</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body">
+    <div class="tool-list">
+      <div class="tool-row"><div class="tool-name">DECIPHER</div><div class="tool-desc">Hasta CNV/SV paylaşım platformu</div><div class="tool-link"><a href="https://www.deciphergenomics.org" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">ClinGen Dosage</div><div class="tool-desc">HI/TS kürasyon veritabanı</div><div class="tool-link"><a href="https://dosage.clinicalgenome.org" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">GenCC</div><div class="tool-desc">Gen-hastalık validite konsensüsü</div><div class="tool-link"><a href="https://thegencc.org" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">OMIM</div><div class="tool-desc">Mendelian hastalık kataloğu</div><div class="tool-link"><a href="https://omim.org" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">ClinVar</div><div class="tool-desc">Varyant sınıflandırma arşivi</div><div class="tool-link"><a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">gnomAD</div><div class="tool-desc">Popülasyon frekansları (SV dahil)</div><div class="tool-link"><a href="https://gnomad.broadinstitute.org" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">DGV</div><div class="tool-desc">Benign SV kataloğu</div><div class="tool-link"><a href="https://dgv.tcag.ca" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">ClinGen CNV Calc</div><div class="tool-desc">Resmi puanlama hesaplayıcısı</div><div class="tool-link"><a href="https://cnvcalc.clinicalgenome.org/cnvcalc/" target="_blank">Aç ↗</a></div></div>
+      <div class="tool-row"><div class="tool-name">Matchmaker Exchange</div><div class="tool-desc">Nadir varyant eşleştirme ağı</div><div class="tool-link"><a href="https://www.matchmakerexchange.org" target="_blank">Aç ↗</a></div></div>
+    </div>
+  </div></div>
+  <div class="step-nav"><span class="step-ctr">Kaynak</span><div class="nav-btns"><button class="btn" onclick="goTo(12)">← Kavramlar</button><button class="btn-primary btn" onclick="showResult()">Sonuç ve Rapor →</button></div></div>
+</div>
+
+</div><!-- /mainWrap -->
+
+<!-- ═══════════ SONUÇ EKRANI ═══════════ -->
+<div class="result-screen" id="resultScreen">
+
+  <div class="result-summary">
+    <div class="eyebrow">Değerlendirme Sonucu</div>
+    <div class="result-class" id="resClass">—</div>
+    <div class="result-score-line" id="resScore">Toplam skor: —</div>
+    <div class="result-patient-line" id="resPatientLine"></div>
+  </div>
+
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-blue">Skor</span><div><div class="panel-title">Section Bazlı Puan Dökümü</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body"><div class="bar-chart" id="barChart"></div></div></div>
+
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-amber">Yorum</span><div><div class="panel-title">Klinik Yorum</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body" id="resExplain"></div></div>
+
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-green">Kanıt</span><div><div class="panel-title">Sınıflamayı Etkileyen Ana Kanıtlar</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body" id="resEvidence"></div></div>
+
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-red">Eksik</span><div><div class="panel-title">Eksik veya Sınıfı Değiştirebilecek Kanıtlar</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body" id="resMissing"></div></div>
+
+  <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Sonraki</span><div><div class="panel-title">Önerilen Sonraki Adımlar</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body" id="resNext"></div></div>
+
+  <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-purple">Eğitim</span><div><div class="panel-title">Eğitim Açıklaması</div></div><span class="panel-chev">▼</span></div>
+  <div class="panel-body" id="resEdu"></div></div>
+
+  <!-- RAPOR KARTI -->
+  <div style="margin-top:28px;padding-top:22px;border-top:2px solid var(--border2)">
+    <h4 style="font-family:'Merriweather',serif;font-size:19px;margin-bottom:8px">Rapor Kartı Oluştur</h4>
+    <p style="margin-bottom:14px">Hasta bilgileri olgu kartından otomatik alınır. Fenotip uyumu ve ek notları ekleyin.</p>
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-lbl">Fenotip Uyumu Değerlendirmesi</label><textarea class="form-inp" id="rcPhenoCorr" placeholder="Örn: CNV içindeki SNRPN geninin kaybına bağlı Prader-Willi sendromu fenotipi ile uyumlu bulunmuştur."></textarea></div>
+      <div class="form-group full"><label class="form-lbl">Ek Notlar / Eksik Kanıtlar</label><textarea class="form-inp" id="rcNotes" placeholder="Örn: Ebeveyn testi bekleniyor. 12 ay sonra yeniden değerlendirme planlanmıştır."></textarea></div>
+    </div>
+    <div style="margin-top:14px"><button class="btn-primary btn" onclick="genReport()">Rapor Kartı Oluştur</button></div>
+  </div>
+
+  <!-- OLUŞTURULAN RAPOR KARTI -->
+  <div class="report-card" id="reportCard">
+    <div class="rc-hdr">
+      <div class="rc-hdr-l">
+        <div class="rc-hdr-title">CNV Değerlendirme Puan Kartı</div>
+        <div class="rc-hdr-sub">ACMG/ClinGen Bayesian Puanlama · Riggs et al. 2020</div>
+      </div>
+      <div class="rc-hdr-r" id="rcMeta"></div>
+    </div>
+
+    <!-- Hasta fotoğrafı + kimlik -->
+    <div class="rc-section" id="rcPhotoSection">
+      <div class="rc-photo-wrap">
+        <img id="rcPhotoImg" class="rc-photo" alt="Fenotip görseli">
+        <div id="rcPatientSummary" style="font-size:14px;color:var(--txt);line-height:1.6"></div>
+      </div>
+    </div>
+
+    <div class="rc-section"><div class="rc-section-title">Olgu Bilgisi</div><div class="rc-grid" id="rcPatFields"></div></div>
+    <div class="rc-section"><div class="rc-section-title">CNV Bilgisi</div><div class="rc-grid" id="rcCnvFields"></div></div>
+    <div class="rc-section"><div class="rc-section-title">Teknik Bilgiler</div><div class="rc-grid" id="rcTechFields"></div></div>
+
+    <div class="rc-section">
+      <div class="rc-section-title">ACMG/ClinGen CNV Sınıflandırması</div>
+      <div class="rc-scores" id="rcScoreGrid">
+        <div class="rc-sh">S1</div><div class="rc-sh">S2</div><div class="rc-sh">S3</div><div class="rc-sh">S4a</div><div class="rc-sh">S4seg</div><div class="rc-sh">S4b</div><div class="rc-sh">S5</div><div class="rc-sh">Toplam</div>
+      </div>
+      <div class="rc-class-box" id="rcClassBox">
+        <div class="rc-class-lbl">Nihai Sınıflandırma</div>
+        <div class="rc-class-val" id="rcClassVal">—</div>
+        <div class="rc-class-score" id="rcClassScore">—</div>
+      </div>
+    </div>
+
+    <div class="rc-section" id="rcCorrSec" style="display:none"><div class="rc-section-title">Hastaya Özgü Klinik Korelasyon</div><div class="rc-notes" id="rcCorrTxt"></div></div>
+    <div class="rc-section"><div class="rc-section-title">Eksik Kanıtlar ve Önerilen Takip</div><div class="rc-notes" id="rcMissTxt"></div></div>
+    <div class="rc-section" id="rcNotesSec" style="display:none"><div class="rc-section-title">Ek Notlar</div><div class="rc-notes" id="rcNotesTxt"></div></div>
+    <div class="rc-section" id="rcReportingFields">
+      <div class="rc-section-title">Raporlama Bilgileri (Reporting Guidelines)</div>
+      <div class="rc-grid" id="rcReportFields"></div>
+    </div>
+
+    <div class="rc-section" id="rcReportContext">
+      <div class="rc-section-title">Raporlama Bağlamı</div>
+      <div class="rc-notes" id="rcReportContextTxt"></div>
+    </div>
+
+    <div class="rc-section"><div class="rc-section-title">Sürüm ve Sınırlılıklar</div><div class="rc-notes">Bu modül eğitim ve yapılandırılmış karar destek amacıyla geliştirilmiş prototip bir araçtır. Klinik raporun veya uzman değerlendirmesinin yerini almaz. CNV sınıflaması Riggs et al. 2020 ACMG/ClinGen teknik standartlarına dayalıdır. Hastaya özgü nedensellik yorumu fenotip, kalıtım, teknik doğrulama ve klinik korelasyon ile birlikte uzman tarafından yapılmalıdır. Yerel validasyon ve kalite kontrol tamamlanmadan rutin klinik karar mekanizması olarak kullanılmamalıdır.</div></div>
+    <div class="rc-section"><div class="rc-section-title">Validasyon Durumu</div><div class="rc-notes">• Eğitim/prototip sürümü
+• Manuel vaka karşılaştırması önerilir
+• Franklin / ClinGen Dosage / DECIPHER çıktılarıyla çapraz kontrol önerilir
+• Yerel laboratuvar doğrulaması gerektirir</div></div>
+    <div class="rc-footer"><span>Bu puan kartı klinik karar destek aracıdır. Tanısal raporun yerini almaz.</span><span>Riggs et al. Genet Med. 2020;22(2):245-257</span></div>
+  </div>
+
+  <div class="download-btns" id="downloadBtns" style="display:none">
+    <button class="btn-primary btn" onclick="window.print()">⎙ Yazdır / PDF</button>
+    <button class="btn-outline btn" onclick="dlHTML()">↓ HTML İndir</button>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn" onclick="goTo(6)">← Puanlamaya Dön</button>
+    <button class="btn-danger btn-sm" onclick="resetAll()">Tümü Sıfırla</button>
+  </div>
+</div>
+
+</div><!-- /layout -->
+
+<script>
+/* ══════════════════════════════════════
+   DURUM (STATE)
+   ══════════════════════════════════════ */
+var sc={s1:0,s2:0,s3:0,s4a:0,s4seg:0,s4b:0,s5:0};
+var sel={};
+var cur=-1;
+var cnvT=null;
+var s4aPPCase=0, s4aKey="";
+var pat={};
+var photoB64="";
+
+/* -- HASTA STATE SENKRONIZASYONU -- */
+function syncPatientState(){
+  pat={
+    id:gv("ptId"),age:gv("ptAge"),sex:gv("ptSex"),reason:gv("ptReason"),
+    pheno:gv("ptPheno"),hpo:gv("ptHpo"),testType:gv("ptTestType"),
+    platform:gv("ptPlatform"),build:gv("ptBuild"),parentTest:gv("ptParent"),
+    cnvType:gv("ptCnvType"),coord:gv("ptCoord"),size:gv("ptSize"),
+    labClass:gv("ptLabClass"),genes:gv("ptGenes"),
+    mode:gv("ptMode"),output:gv("ptOutput"),cytoband:gv("ptCytoband"),copyState:gv("ptCopyState"),iscn:gv("ptISCN"),geneCount:gv("ptGeneCount"),transcript:gv("ptTranscript"),reportCat:gv("ptReportCat"),
+    explainLevel:gv("ptExplainLevel")
+  };
+}
+
+/* -- TEMA -- */
+function toggleTheme(){
+  var h=document.documentElement;
+  var t=h.getAttribute("data-theme")==="dark"?"light":"dark";
+  h.setAttribute("data-theme",t);
+  document.getElementById("themeBtn").textContent=t==="dark"?"\u0041\u00e7\u0131k Tema":"Koyu Tema";
+  try{localStorage.setItem("cnv-theme",t)}catch(e){}
+}
+(function(){
+  try{
+    var s=localStorage.getItem("cnv-theme");
+    if(s){
+      document.documentElement.setAttribute("data-theme",s);
+      if(s==="dark"){var b=document.getElementById("themeBtn");if(b)b.textContent="A\u00e7\u0131k Tema";}
+    }
+  }catch(e){}
+})();
+
+/* -- HASTA FOTOGRAFI -- */
+function handlePhoto(inp){
+  var file=inp.files[0];
+  if(!file)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    photoB64=e.target.result;
+    document.getElementById("photoPreview").src=photoB64;
+    document.getElementById("photoPreview").style.display="block";
+    document.getElementById("photoPlaceholder").style.display="none";
+    document.getElementById("photoUploadArea").style.borderStyle="solid";
+  };
+  r.readAsDataURL(file);
+}
+
+/* -- MOBIL MENU -- */
+function toggleMob(){
+  document.getElementById("sidebarEl").classList.toggle("open");
+  document.getElementById("mobOverlay").classList.toggle("active");
+}
+function closeMob(){
+  document.getElementById("sidebarEl").classList.remove("open");
+  document.getElementById("mobOverlay").classList.remove("active");
+}
+
+/* -- HASTA VERISI -- */
+function saveAndContinue(){
+  syncPatientState();
+  applyMode(pat.mode);
+  goTo(0);
+}
+function gv(id){var e=document.getElementById(id);return e?(e.value||""):""}
+function applyMode(m){document.body.setAttribute("data-mode",m||"egitim")}
+
+/* -- NAVIGASYON -- */
+function goTo(n){
+  document.querySelectorAll(".step-card").forEach(function(c){c.classList.remove("active")});
+  document.querySelectorAll(".nav-item").forEach(function(i){i.classList.remove("active")});
+  document.getElementById("resultScreen").classList.remove("active");
+  document.getElementById("mainWrap").style.display="block";
+  var sid=n===-1?"stepN1":"step"+n;
+  var nid=n===-1?"navN1":"nav"+n;
+  var se=document.getElementById(sid),ne=document.getElementById(nid);
+  if(se)se.classList.add("active");
+  if(ne)ne.classList.add("active");
+  cur=n;
+  var total=16,idx=n===-1?0:n+2;
+  document.getElementById("progFill").style.width=((idx/total)*100)+"%";
+  window.scrollTo({top:0,behavior:"smooth"});
+  closeMob();
+}
+
+function showResult(){
+  syncPatientState();
+  document.querySelectorAll(".step-card").forEach(function(c){c.classList.remove("active")});
+  document.getElementById("resultScreen").classList.add("active");
+  document.getElementById("mainWrap").style.display="none";
+  document.querySelectorAll(".nav-item").forEach(function(i){i.classList.remove("active")});
+  document.getElementById("navR").classList.add("active");
+  document.getElementById("progFill").style.width="100%";
+  renderResult();
+  window.scrollTo({top:0,behavior:"smooth"});
+  closeMob();
+}
+
+/* -- PUANLAMA -- */
+function pick(sec,key,pts,fb,el){
+  sc[sec]=pts; sel[sec]=key;
+  var parent=el.closest(".choice-opts");
+  if(parent)parent.querySelectorAll(".choice-opt").forEach(function(o){o.classList.remove("selected")});
+  el.classList.add("selected");
+  updPts(sec,pts);
+  var fbe=document.getElementById(sec+"-fb");
+  if(fbe){fbe.textContent=fb;fbe.classList.add("vis")}
+  updBadge();
+}
+
+function updPts(sec,pts){
+  var pid=sec+"pts";
+  if(sec==="s4a")pid="s4a_pts";
+  if(sec==="s4seg")pid="s4seg_pts";
+  if(sec==="s4b")pid="s4b_pts";
+  var e=document.getElementById(pid);
+  if(e){e.textContent=(pts>=0?"+":"")+pts.toFixed(2);e.className="score-pts "+(pts>0?"pos":pts<0?"neg":"zero")}
+}
+
+function pickS4a(key,ppc,el){
+  s4aPPCase=ppc;s4aKey=key;
+  var p=el.closest(".choice-opts");
+  if(p)p.querySelectorAll(".choice-opt").forEach(function(o){o.classList.remove("selected")});
+  el.classList.add("selected");
+  updateS4a();
+}
+
+function updateS4a(){
+  var cnt=parseInt(document.getElementById("s4aCaseCount").value)||1;
+  if(cnt<1)cnt=1;
+  var tot;
+  if(s4aKey==="4D"){tot=Math.max(-0.30*cnt,-0.30)}
+  else if(s4aKey==="4none"||s4aPPCase===0){tot=0}
+  else{
+    var capMap={"4A_conf":0.90,"4A_assu":0.90,"4B_conf":0.90,"4B_assu":0.90,"4C_conf":0.90,"4C_assu":0.90,"4E":0.30};
+    var cap=capMap[s4aKey]||0.90;
+    tot=Math.min(s4aPPCase*cnt,cap);
+  }
+  sc.s4a=tot;sel.s4a=s4aKey;
+  updPts("s4a",tot);
+  var fbe=document.getElementById("s4a-fb");
+  if(fbe){
+    fbe.classList.add("vis");
+    if(s4aKey==="4none")fbe.textContent="Vaka kan\u0131t\u0131 bulunamad\u0131.";
+    else if(s4aKey==="4D")fbe.textContent="4D: Fenotip tutars\u0131z. "+tot.toFixed(2);
+    else fbe.textContent=s4aKey+": "+cnt+" vaka \u00d7 "+s4aPPCase.toFixed(2)+" = "+tot.toFixed(2)+" (max 0.45)";
+  }
+  updBadge();
+}
+
+function setCNVType(t,el){
+  cnvT=t;
+  document.querySelectorAll("#cnvTypeOpts .choice-opt").forEach(function(o){o.classList.remove("selected")});
+  el.classList.add("selected");
+  document.getElementById("del-choices").style.display=t==="del"?"block":"none";
+  document.getElementById("dup-choices").style.display=t==="dup"?"block":"none";
+}
+
+function totalScore(){return sc.s1+sc.s2+sc.s3+sc.s4a+sc.s4seg+sc.s4b+sc.s5}
+function classify(s){
+  if(s>=0.99)return{cls:"Patojenik (P)",code:"p",color:"var(--red)"};
+  if(s>=0.90)return{cls:"Olas\u0131 Patojenik (LP)",code:"lp",color:"var(--amber)"};
+  if(s>-0.90)return{cls:"VUS",code:"vus",color:"var(--txt3)"};
+  if(s>-0.99)return{cls:"Olas\u0131 Benign (LB)",code:"lb",color:"var(--teal)"};
+  return{cls:"Benign (B)",code:"b",color:"var(--blue)"};
+}
+
+function updBadge(){
+  var s=totalScore(),cl=classify(s),b=document.getElementById("liveBadge");
+  b.textContent=(s>=0?"+":"")+s.toFixed(2)+" \u00b7 "+cl.cls;
+  b.className="live-badge "+cl.code;
+}
+
+function resetAll(){
+  sc={s1:0,s2:0,s3:0,s4a:0,s4seg:0,s4b:0,s5:0};sel={};cnvT=null;s4aPPCase=0;s4aKey="";
+  document.querySelectorAll(".choice-opt").forEach(function(o){o.classList.remove("selected")});
+  document.querySelectorAll(".score-pts").forEach(function(e){e.textContent="0.00";e.className="score-pts zero"});
+  document.querySelectorAll(".feedback-box").forEach(function(e){e.classList.remove("vis")});
+  var dc=document.getElementById("del-choices"),uc=document.getElementById("dup-choices");
+  if(dc)dc.style.display="none";if(uc)uc.style.display="none";
+  var cc=document.getElementById("s4aCaseCount");if(cc)cc.value=1;
+  var rc=document.getElementById("reportCard");if(rc)rc.classList.remove("visible");
+  var db=document.getElementById("downloadBtns");if(db)db.style.display="none";
+  var pp=document.getElementById("photoPreview");if(pp){pp.src="";pp.style.display="none";}
+  var ph=document.getElementById("photoPlaceholder");if(ph)ph.style.display="block";
+  updBadge();
+}
+
+/* -- SONUC RENDER -- */
+function renderResult(){
+  syncPatientState();
+  var s=totalScore(),cl=classify(s);
+  var rc=document.getElementById("resClass");
+  rc.textContent=cl.cls;rc.style.color=cl.color;
+  document.getElementById("resScore").textContent="Toplam skor: "+(s>=0?"+":"")+s.toFixed(2);
+
+  var parts=[];
+  if(pat.id)parts.push(esc(pat.id));
+  if(pat.age)parts.push(esc(pat.age));
+  if(pat.sex)parts.push(esc(pat.sex));
+  if(pat.coord)parts.push(esc(pat.coord));
+  if(pat.size)parts.push(esc(pat.size));
+  if(pat.genes)parts.push("Gen: "+esc(pat.genes));
+  document.getElementById("resPatientLine").textContent=parts.length?parts.join(" \u00b7 "):"Olgu bilgisi girilmemi\u015f. Olgu kart\u0131na d\u00f6nerek bilgileri girebilirsiniz.";
+
+  var rows=[{l:"Section 1",v:sc.s1},{l:"Section 2",v:sc.s2},{l:"Section 3",v:sc.s3},
+    {l:"Section 4a",v:sc.s4a},{l:"Section 4seg",v:sc.s4seg},{l:"Section 4b",v:sc.s4b},{l:"Section 5",v:sc.s5},{l:"TOPLAM",v:s}];
+  document.getElementById("barChart").innerHTML=rows.map(function(r){
+    var pct=Math.abs(r.v)/1.2*100;
+    var col=r.v>0?"var(--green)":r.v<0?"var(--red)":"var(--txt4)";
+    return "<div class=\"bar-row\"><span class=\"bar-lbl\">"+r.l+"</span><div class=\"bar-track\"><div class=\"bar-fill\" style=\"width:"+Math.min(pct,100)+"%;background:"+col+"\"></div></div><span class=\"bar-val\" style=\"color:"+col+"\">"+(r.v>=0?"+":"")+r.v.toFixed(2)+"</span></div>";
+  }).join("");
+
+  var expl={
+    p:"<p>Bu CNV ACMG/ClinGen \u00e7er\u00e7evesine g\u00f6re <strong>patojenik s\u0131n\u0131ftad\u0131r</strong> (\u2265%99 g\u00fcven). Hastada primer tan\u0131sal bulgu olarak yorumlanmas\u0131 fenotip, kal\u0131t\u0131m ve klinik korelasyon ile birlikte de\u011ferlendirilmelidir.</p>",
+    lp:"<p>Bu CNV ACMG/ClinGen \u00e7er\u00e7evesine g\u00f6re <strong>olas\u0131 patojenik s\u0131n\u0131ftad\u0131r</strong> (%90\u201398 g\u00fcven). Klinik anlaml\u0131l\u0131k de\u011ferlendirmesi fenotip uyumu, kal\u0131t\u0131m bilgisi ve varsa ek fonksiyonel/literat\u00fcr kan\u0131tlar\u0131 ile desteklenmelidir.</p>",
+    vus:"<p>Bu CNV <strong>belirsiz klinik anlaml\u0131l\u0131k s\u0131n\u0131f\u0131ndad\u0131r</strong> (VUS). Negatif veya patojenik gibi yorumlanmamal\u0131d\u0131r. Fenotip korelasyonu, ebeveyn \u00e7al\u0131\u015fmas\u0131, literat\u00fcr/DECIPHER kar\u015f\u0131la\u015ft\u0131rmas\u0131 ve periyodik yeniden de\u011ferlendirme \u00f6nerilir.</p>",
+    lb:"<p>Bu CNV <strong>olas\u0131 benign s\u0131n\u0131ftad\u0131r</strong> (%90\u201398 benign g\u00fcveni). Genellikle primer tan\u0131sal bulgu olarak de\u011ferlendirilmez; ancak raporlama laboratuvar politikas\u0131 ve klinik ba\u011flama g\u00f6re de\u011fi\u015febilir.</p>",
+    b:"<p>Bu CNV <strong>benign s\u0131n\u0131ftad\u0131r</strong> (\u2265%99 benign g\u00fcveni). Genellikle primer tan\u0131sal bulgu olarak raporlanmaz; laboratuvar politikas\u0131 ve klinik ba\u011flama g\u00f6re notlanabilir.</p>"
+  };
+  document.getElementById("resExplain").innerHTML=expl[cl.code]||"";
+
+  var evP=[];
+  if(sc.s2!==0)evP.push("Section 2 ("+(sel.s2||"?")+"): "+(sc.s2>=0?"+":"")+sc.s2.toFixed(2));
+  if(sc.s5!==0)evP.push("Section 5 ("+(sel.s5||"?")+"): "+(sc.s5>=0?"+":"")+sc.s5.toFixed(2));
+  if(sc.s4a!==0)evP.push("Section 4A ("+(sel.s4a||"?")+"): "+(sc.s4a>=0?"+":"")+sc.s4a.toFixed(2));
+  if(sc.s4seg!==0)evP.push("Section 4seg ("+(sel.s4seg||"?")+"): "+(sc.s4seg>=0?"+":"")+sc.s4seg.toFixed(2));
+  if(sc.s4b!==0)evP.push("Section 4B ("+(sel.s4b||"?")+"): "+(sc.s4b>=0?"+":"")+sc.s4b.toFixed(2));
+  document.getElementById("resEvidence").innerHTML=evP.length?"<ul>"+evP.map(function(e){return"<li>"+e+"</li>"}).join("")+"</ul>":"<p>Hen\u00fcz puan atanmam\u0131\u015f.</p>";
+
+  var miss=[];
+  if(!sel.s5||sel.s5==="5F")miss.push("Kal\u0131t\u0131m bilgisi eksik \u2014 ebeveyn testi yap\u0131l\u0131rsa s\u0131n\u0131f de\u011fi\u015febilir");
+  if(!sel.s4a||sel.s4a==="4none")miss.push("DECIPHER/ClinVar veritabanlarinda benzer vaka aranmami\u015f veya bulunamam\u0131\u015ft\u0131r");
+  if(!sel.s4b||sel.s4b==="4pop_none")miss.push("Pop\u00fclasyon frekans verisi de\u011ferlendirilmemi\u015f");
+  if(cl.code==="vus")miss.push("VUS olarak kal\u0131yorsa 12\u201324 ay sonra yeniden de\u011ferlendirme planlay\u0131n");
+  document.getElementById("resMissing").innerHTML=miss.length?"<ul>"+miss.map(function(m){return"<li>"+m+"</li>"}).join("")+"</ul>":"<p>Belirgin eksik kan\u0131t saptanmam\u0131\u015ft\u0131r.</p>";
+
+  var nxt={
+    p:"<ul><li>Fenotip uyumunu, kal\u0131t\u0131m\u0131 ve klinik korelasyonu birlikte de\u011ferlendirin</li><li>Sendrom-spesifik takip plan\u0131 ba\u015flat\u0131n</li><li>Aile \u00fcyelerine bilgilendirme ve test \u00f6nerin</li></ul>",
+    lp:"<ul><li>Ebeveyn testi ile de novo durumunu teyit edin</li><li>DECIPHER/ClinVar veritabanlarinda yeni vaka kontrol\u00fc yap\u0131n</li><li>Fenotip korelasyonunu g\u00fc\u00e7lendirmeye \u00e7al\u0131\u015f\u0131n</li></ul>",
+    vus:"<ul><li>Ebeveyn testi ile kal\u0131t\u0131m durumunu belirleyin</li><li>Fenotip uyumu g\u00fc\u00e7l\u00fcyse WES/WGS trio \u00f6nerin</li><li>VUS izlem listesine al\u0131n</li><li>12\u201324 ay sonra ClinVar, DECIPHER, PubMed taramas\u0131yla yeniden de\u011ferlendirin</li></ul>",
+    lb:"<ul><li>Genellikle raporlanmaz</li><li>\u015e\u00fcphesi varsa ebeveyn testi yap\u0131n</li></ul>",
+    b:"<ul><li>Genellikle raporlanmaz; laboratuvar politikas\u0131na g\u00f6re notlanabilir</li></ul>"
+  };
+  document.getElementById("resNext").innerHTML=nxt[cl.code]||"";
+
+  var edu={
+    p:"<p>Patojenik s\u0131n\u0131f, Bayesian \u00e7er\u00e7evede posterior olas\u0131l\u0131k \u22650.99 anlam\u0131na gelir. Section 2A (+1.00) gibi tek bir g\u00fc\u00e7l\u00fc kan\u0131t veya birden fazla orta d\u00fczey kan\u0131t\u0131n birikimi ile bu e\u015fi\u011fe ula\u015f\u0131l\u0131r.</p>",
+    lp:"<p>LP s\u0131n\u0131f\u0131 genellikle 0.90\u20130.98 aral\u0131\u011f\u0131nda olu\u015fur. Section 2E (+0.90) tek ba\u015f\u0131na LP e\u015fi\u011fine ula\u015f\u0131r ama P sinifina ge\u00e7mek i\u00e7in ek kan\u0131t (Section 5A gibi) gereklidir.</p>",
+    vus:"<p>VUS en geni\u015f kategoridir (\u22120.89 ile +0.89 aras\u0131). Bu \u201cbilmiyoruz\u201d demektir, \u201czarars\u0131z\u201d de\u011fil. Zamanla yeni kan\u0131t biriktik\u00e7e s\u0131n\u0131f g\u00fcncellenebilir.</p>",
+    lb:"<p>LB genellikle pop\u00fclasyonda s\u0131k g\u00f6r\u00fclen ama tek ba\u015f\u0131na \u22121.00 e\u015fi\u011fine ula\u015fmayan CNV varyantlari i\u00e7indir.</p>",
+    b:"<p>Benign s\u0131n\u0131f i\u00e7in gnomAD-SV veritabaninda >%1 s\u0131kl\u0131k (4O: \u22121.00) veya bilinen benign b\u00f6lgeyle tam overlap (2F: \u22121.00) gibi g\u00fc\u00e7l\u00fc negatif kan\u0131t gerekir.</p>"
+  };
+  document.getElementById("resEdu").innerHTML=edu[cl.code]||"";
+}
+
+/* -- RAPOR KARTI -- */
+function genReport(){
+  syncPatientState();
+  var s=totalScore(),cl=classify(s);
+  var date=new Date().toLocaleDateString("tr-TR");
+  var meta=document.getElementById("rcMeta");
+  meta.innerHTML="";
+  var d1=document.createElement("div");d1.textContent=date;meta.appendChild(d1);
+  if(pat.id){var d2=document.createElement("div");d2.textContent=pat.id;meta.appendChild(d2);}
+
+  var rpi=document.getElementById("rcPhotoImg");
+  if(photoB64){rpi.src=photoB64;rpi.style.display="block";}else{rpi.style.display="none";}
+  var psum=document.getElementById("rcPatientSummary");
+  var pp=[];
+  if(pat.id)pp.push(esc(pat.id));
+  if(pat.age)pp.push(esc(pat.age));
+  if(pat.sex)pp.push(esc(pat.sex));
+  psum.textContent=pp.join(" \u00b7 ");
+
+  fillGrid("rcPatFields",[
+    {l:"Hasta ID",v:pat.id},{l:"Ya\u015f",v:pat.age},
+    {l:"Cinsiyet",v:pat.sex},{l:"Ba\u015fvuru Nedeni",v:pat.reason},
+    {l:"Fenotip",v:pat.pheno},{l:"HPO",v:pat.hpo}
+  ]);
+  fillGrid("rcCnvFields",[
+    {l:"Koordinat",v:pat.coord},{l:"Tip / Boyut",v:(pat.cnvType||"")+(pat.size?" / "+pat.size:"")},
+    {l:"Etkilenen Genler",v:pat.genes},{l:"Lab S\u0131n\u0131f\u0131",v:pat.labClass}
+  ]);
+  fillGrid("rcTechFields",[
+    {l:"Test Tipi",v:pat.testType},{l:"Platform",v:pat.platform},
+    {l:"Genome Build",v:pat.build},{l:"Ebeveyn Testi",v:pat.parentTest}
+  ]);
+
+  fillGrid("rcReportFields",[
+    {l:"Sitogenetik Bant",v:pat.cytoband},{l:"Kopya Say\u0131s\u0131 Durumu",v:pat.copyState},
+    {l:"ISCN Notasyonu",v:pat.iscn},{l:"Gen Say\u0131s\u0131",v:pat.geneCount},
+    {l:"Transkript / Ekzon",v:pat.transcript},{l:"Raporlama Kategorisi",v:pat.reportCat}
+  ]);
+
+  var rctx=document.getElementById("rcReportContextTxt");
+  if(rctx){
+    var cat=pat.reportCat||"";
+    var ctxTxt=cat;
+    if(cat.indexOf("Ta\u015f\u0131y\u0131c\u0131")>=0||cat.indexOf("Tasiyicilik")>=0){
+      ctxTxt+=". Tek allelik delesyon, otozomal resesif hastal\u0131k i\u00e7in ta\u015f\u0131y\u0131c\u0131l\u0131k g\u00f6sterebilir; etkilenen durum tan\u0131s\u0131 i\u00e7in ikinci patojenik allelin g\u00f6sterilmesi gerekir.";
+    }
+    rctx.textContent=ctxTxt||"Belirtilmemi\u015f";
+  }
+
+  var grid=document.getElementById("rcScoreGrid");
+  grid.querySelectorAll(".rc-sv").forEach(function(v){v.remove()});
+  [sc.s1,sc.s2,sc.s3,sc.s4a,sc.s4seg,sc.s4b,sc.s5,s].forEach(function(v){
+    var d=document.createElement("div");d.className="rc-sv";
+    d.style.color=v>0?"var(--green)":v<0?"var(--red)":"var(--txt4)";
+    d.textContent=(v>=0?"+":"")+v.toFixed(2);grid.appendChild(d);
+  });
+
+  var cv=document.getElementById("rcClassVal");
+  cv.textContent=cl.cls;cv.style.color=cl.color;
+  document.getElementById("rcClassScore").textContent="Toplam skor: "+(s>=0?"+":"")+s.toFixed(2);
+
+  var corr=document.getElementById("rcPhenoCorr").value;
+  var cs=document.getElementById("rcCorrSec"),ct=document.getElementById("rcCorrTxt");
+  if(corr&&cs&&ct){cs.style.display="block";ct.textContent=corr;}else if(cs){cs.style.display="none";}
+
+  var miss=[];
+  if(!sel.s5||sel.s5==="5F")miss.push("Kal\u0131t\u0131m bilgisi eksik");
+  if(!sel.s4a||sel.s4a==="4none")miss.push("Benzer vaka kan\u0131t\u0131 de\u011ferlendirilmemi\u015f");
+  var mt=document.getElementById("rcMissTxt");
+  if(mt)mt.textContent=miss.length?miss.join(". ")+".":"Belirgin eksik kan\u0131t saptanmam\u0131\u015ft\u0131r.";
+
+  var notes=document.getElementById("rcNotes").value;
+  var ns=document.getElementById("rcNotesSec"),nt=document.getElementById("rcNotesTxt");
+  if(notes&&ns&&nt){ns.style.display="block";nt.textContent=notes;}else if(ns){ns.style.display="none";}
+
+  document.getElementById("reportCard").classList.add("visible");
+  document.getElementById("downloadBtns").style.display="flex";
+}
+
+function fillGrid(id,fields){
+  var el=document.getElementById(id);if(!el)return;
+  el.innerHTML="";
+  fields.forEach(function(f){
+    if(!f.v)return;
+    var div=document.createElement("div");div.className="rc-field";
+    var lbl=document.createElement("div");lbl.className="rc-field-lbl";lbl.textContent=f.l;
+    var val=document.createElement("div");val.className="rc-field-val";val.textContent=f.v;
+    div.appendChild(lbl);div.appendChild(val);el.appendChild(div);
+  });
+}
+
+function dlHTML(){
+  syncPatientState();
+  var card=document.getElementById("reportCard");
+  if(!card)return;
+  var h="<!DOCTYPE html><html lang=\"tr\"><head><meta charset=\"UTF-8\"><title>CNV Puan Kart\u0131</title>";
+  h+="<style>body{font-family:system-ui,sans-serif;margin:20px;color:#111;font-size:12px}";
+  h+=".rc-hdr{padding:16px;border-bottom:2px solid #333;display:flex;justify-content:space-between;background:#f0f5fa}";
+  h+=".rc-hdr-title{font-size:17px;font-weight:700;color:#1a4a7a}.rc-hdr-sub{font-size:11px;color:#666}";
+  h+=".rc-section{padding:14px;border-bottom:1px solid #ddd}";
+  h+=".rc-section-title{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#888;font-weight:700;margin-bottom:10px}";
+  h+=".rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}";
+  h+=".rc-field{padding:7px 10px;border:1px solid #ccc;border-radius:3px;background:#fafafa}";
+  h+=".rc-field-lbl{font-size:9px;text-transform:uppercase;color:#888}.rc-field-val{font-size:12px;font-weight:500}";
+  h+=".rc-class-box{text-align:center;padding:16px;border:2px solid #333;border-radius:5px;margin:12px 0}";
+  h+=".rc-class-lbl{font-size:10px;text-transform:uppercase;color:#888;margin-bottom:4px;font-weight:700}";
+  h+=".rc-class-val{font-size:24px;font-weight:700}.rc-class-score{font-size:12px;color:#888}";
+  h+=".rc-scores{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #ccc;border-radius:4px;overflow:hidden;margin:10px 0}";
+  h+=".rc-sh,.rc-sv{padding:7px 3px;text-align:center;border-right:1px solid #eee;font-size:10px}";
+  h+=".rc-sh{background:#f0f0f0;font-weight:700;text-transform:uppercase;color:#888;font-size:9px}.rc-sv{font-weight:700;border-top:1px solid #ccc;font-size:12px}";
+  h+=".rc-notes{padding:10px;border:1px solid #ccc;border-radius:4px;font-size:11px;line-height:1.6}";
+  h+=".rc-footer{padding:12px 16px;border-top:1px solid #ccc;font-size:9px;color:#999;display:flex;justify-content:space-between}";
+  h+=".rc-photo{width:72px;height:72px;border-radius:5px;object-fit:cover;border:2px solid #ccc}";
+  h+=".rc-photo-wrap{display:flex;align-items:center;gap:12px;margin-bottom:10px}";
+  h+="</style></head><body>"+card.innerHTML+"</body>";
+  var blob=new Blob([h],{type:"text/html;charset=utf-8"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;
+  a.download="CNV_Puan_Karti_"+(pat.id||"rapor")+".html";
+  a.click();URL.revokeObjectURL(url);
+}
+
+/* -- UI YARDIMCILAR -- */
+function tPanel(head){head.parentElement.classList.toggle("open")}
+function tEdu(btn){
+  var c=btn.nextElementSibling;
+  c.classList.toggle("open");
+  btn.textContent=c.classList.contains("open")?"\u25be E\u011fitim a\u00e7\u0131klamas\u0131n\u0131 kapat":"\u25b8 E\u011fitim a\u00e7\u0131klamas\u0131";
+}
+
+/* HTML ESCAPE -- GUVENLIK */
+function esc(s){
+  if(!s)return"";
+  var d=document.createElement("div");
+  d.appendChild(document.createTextNode(String(s)));
+  return d.innerHTML;
+}
+
+/* -- KLAVYE -- */
+document.addEventListener("keydown",function(e){
+  if(["INPUT","TEXTAREA","SELECT"].indexOf(e.target.tagName)>=0)return;
+  if(e.key==="ArrowRight"){
+    e.preventDefault();
+    if(document.getElementById("resultScreen").classList.contains("active"))return;
+    if(cur<13)goTo(cur+1);else showResult();
+  }
+  if(e.key==="ArrowLeft"){
+    e.preventDefault();
+    if(document.getElementById("resultScreen").classList.contains("active")){goTo(13);return;}
+    if(cur>-1)goTo(cur-1);
+  }
+});
+</script>
+
+</body>
+</html>

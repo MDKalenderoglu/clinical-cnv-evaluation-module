@@ -1,0 +1,16 @@
+.DS_Store
+.idea/
+.vscode/
+*.log
+tmp/
+temp/
+node_modules/
+.env
+.env.*
+*.bak
+*.tmp
+_local_sources/
+*.pdf
+*.docx
+
+# Do not commit real patient data, images, screenshots, or exported reports.
