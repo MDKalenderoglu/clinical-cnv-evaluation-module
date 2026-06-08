@@ -418,6 +418,13 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 .tag-gray{background:var(--bg2);border:1.5px solid var(--border);color:var(--txt3)}
 .tag-purple{background:var(--purple-bg);border:1.5px solid var(--purple-b);color:var(--purple)}
 .tag-teal{background:var(--teal-bg);border:1.5px solid var(--teal-b);color:var(--teal)}
+.guide-panel{border:1.5px solid var(--blue-b);border-left:4px solid var(--blue);border-radius:7px;background:var(--blue-bg);padding:14px 16px;margin:16px 0 18px}
+.guide-title{font-family:'JetBrains Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);font-weight:700;margin-bottom:7px}
+.guide-panel p{font-size:13.5px;line-height:1.65;margin:0 0 7px;color:var(--txt2)}
+.guide-panel p:last-child{margin-bottom:0}
+.guide-panel strong{color:var(--txt);font-weight:700}
+.guide-panel details{border-top:1px solid var(--blue-b);margin-top:8px;padding-top:8px}
+.guide-panel summary{cursor:pointer;font-size:13.5px;color:var(--blue);font-weight:700}
 .feedback-box{border-radius:5px;padding:10px 14px;margin-top:10px;font-size:13px;display:none;background:var(--blue-bg);border:1.5px solid var(--blue-b);color:var(--blue);line-height:1.55}
 .feedback-box.vis{display:block}
 .section-divider{height:2px;background:var(--border);margin:18px 0}
@@ -617,6 +624,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Teknik Doğrulama</div>
   <div class="page-title">Platform, Build ve QC Kontrolü</div>
   <div class="page-lead">Yorumlama öncesi teknik güvenilirlik kontrolü. Platform ve build uyumsuzluğu tüm değerlendirmeyi geçersiz kılar.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Teknik Doğrulama</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> CNV sonucunun teknik olarak yorumlanabilir olup olmadığını değerlendirir: platform, genome build, QC, log2 ratio ve varsa BAF bilgisi.</p>
+    <p><strong>Gerekli veri:</strong> Platform tipi, GRCh37/GRCh38 build, koordinat formatı, prob/marker kapsamı, QC sonucu, rapor tarihi ve laboratuvar doğrulama bilgisi.</p>
+    <p><strong>Adım adım karar:</strong> Önce platformu ayırın; SNP-array BAF ile ROH/UPD ve mozaiklik hakkında ek ipucu verebilir, aCGH ise çoğunlukla log2 ratio üzerinden kopya sayısını gösterir. Ardından build ve QC netliğini kontrol edin.</p>
+    <p><strong>Ne zaman atlanır?</strong> Atlanmamalıdır. Build veya QC belirsizse puanlamaya başlamadan önce teknik açıklama istenmelidir.</p>
+    <details><summary>Sık hata</summary><p>GRCh37 koordinatını GRCh38 gibi sorgulamak veya QC başarısız bir sonucu klinik olarak yorumlamak yanlış sınıflamaya yol açabilir.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: SNP-array raporunda log2 kayıp sinyali ve BAF ayrışması uyumlu, build GRCh38 ve QC başarılıysa yorumlamaya geçilebilir.</p></details>
+  </div>
 
   <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Platform</span><div><div class="panel-title">aCGH mi, SNP-array mi?</div></div><span class="panel-chev">▼</span></div>
   <div class="panel-body">
@@ -657,6 +673,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">CNV Triaj</div>
   <div class="page-title">Laboratuvar Sınıfına Göre Ön Eleme</div>
   <div class="page-lead">Rapordaki tüm CNV'leri değerlendirin. Lab sınıfına göre ilk triaj kararı verin.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · CNV Triaj</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> Laboratuvarın P/LP/VUS/B/LB sınıfını klinik iş akışında nasıl ele alacağınızı ve hangi bulguların yeniden puanlanacağını belirler.</p>
+    <p><strong>Gerekli veri:</strong> Laboratuvar sınıfı, CNV tipi, teknik kalite, raporlama nedeni, fenotip özeti ve varsa önceki sınıflandırma kaynakları.</p>
+    <p><strong>Adım adım karar:</strong> P/LP ve VUS bulguları bağımsız puanlamaya alın; B/LB bulgularda teknik istisna, ROH/UPD şüphesi veya raporlama bağlamı var mı kontrol edin. Laboratuvar sınıfını körlemesine kabul etmeyin.</p>
+    <p><strong>Ne zaman atlanır?</strong> Tek bir CNV bile değerlendirilecekse atlanmamalıdır; triaj yalnızca ayrıntılı puanlama öncesi yönlendirme sağlar.</p>
+    <details><summary>Sık hata</summary><p>CNV sınıfını hastanın fenotipine göre değiştirmek. Varyant düzeyi sınıflama ile hastaya özgü klinik korelasyon ayrı tutulmalıdır.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: Laboratuvar VUS bildirmişse, bu sonuç doğrudan tanısal kabul edilmez; Section 1-5 ile yeniden yapılandırılmış değerlendirme yapılır.</p></details>
+  </div>
   <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Triaj</span><div><div class="panel-title">Lab sınıfına göre karar matrisi</div></div><span class="panel-chev">▼</span></div>
   <div class="panel-body">
     <table class="tbl"><thead><tr><th>Lab Sınıfı</th><th>Önerilen İşlem</th><th>İstisna</th></tr></thead>
@@ -675,6 +700,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 1 · Puanlama</div>
   <div class="page-title">Protein-Kodlayan Gen İçeriği</div>
   <div class="page-lead">CNV bölgesi protein-kodlayan gen veya bilinen fonksiyonel element içeriyor mu? Bu karar hem delesyon hem duplikasyon için geçerlidir.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 1</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> CNV'nin protein-kodlayan gen, bilinen fonksiyonel element, intergenik bölge veya intragenik kırılım içerip içermediğini değerlendirir.</p>
+    <p><strong>Gerekli veri:</strong> Doğru build ile koordinatlar, RefSeq/Ensembl gen listesi, protein-kodlayan gen sayısı, kırılım noktalarının gen içi veya gen dışı konumu.</p>
+    <p><strong>Adım adım karar:</strong> Koordinatı genom tarayıcıda açın, protein-kodlayan genleri listeleyin, CNV tamamen intergenik mi yoksa gen/fonksiyonel element içeriyor mu belirleyin. Her CNV için Section 1 değerlendirilir.</p>
+    <p><strong>Ne zaman atlanır?</strong> Atlanmaz; çünkü Section 2 ve Section 3 yolunu belirler.</p>
+    <details><summary>Sık hata</summary><p>Yalnızca gen adı görünmediği için bölgeyi boş kabul etmek. Fonksiyonel elementler, alternatif transkriptler ve build uyumu ayrıca kontrol edilmelidir.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: CNV herhangi bir protein-kodlayan gen içermiyorsa intergenik olarak işaretlenir; intragenik kırılım varsa Section 2 intragenik mantığına geçilir.</p></details>
+  </div>
   <div class="tool-list">
     <div class="tool-row"><div class="tool-name">UCSC Genome Browser</div><div class="tool-desc">Koordinat gir → RefSeq Genes track → bölgedeki genleri listele</div><div class="tool-link"><a href="https://genome.ucsc.edu" target="_blank">Aç ↗</a></div></div>
     <div class="tool-row"><div class="tool-name">Ensembl</div><div class="tool-desc">Gen, transkript ve Ensembl ID listesi</div><div class="tool-link"><a href="https://ensembl.org" target="_blank">Aç ↗</a></div></div>
@@ -697,6 +731,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 2 · Puanlama</div>
   <div class="page-title">Bilinen HI/TS ve Benign Bölgelerle Overlap</div>
   <div class="page-lead">En ağırlıklı adım. Tek kriter +1.00 veya −1.00 vererek sınıfı doğrudan belirleyebilir.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 2</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> CNV'nin bilinen HI, TS veya benign bölgeyle tam/kısmi overlap ilişkisini ve intragenik CNV/PVS1 mantığını değerlendirir.</p>
+    <p><strong>Gerekli veri:</strong> CNV tipi, koordinatlar, ClinGen HI/TS skoru, benign bölge karşılaştırması, overlap yüzdesi, etkilenen gen/ekzon ve kırılım konumu.</p>
+    <p><strong>Adım adım karar:</strong> Önce DEL veya DUP seçin. Delesyonda HI ve benign overlap mantığını, duplikasyonda TS/benign overlap ve HI genin kesilme durumunu ayrı uygulayın. Tam overlap, kısmi overlap ve intragenik kırılımı ayrı ayrı doğrulayın.</p>
+    <p><strong>Ne zaman atlanır?</strong> Güvenilir overlap veya intragenik bilgi yoksa uygun "hiçbiri" seçeneği ile Section 3'e devam edilir; bölüm tamamen göz ardı edilmez.</p>
+    <details><summary>Sık hata</summary><p>Delesyon mantığını duplikasyona uygulamak. HI kanıtı delesyon için güçlü olabilir; duplikasyonda TS veya gen bozucu kırılım ayrıca değerlendirilmelidir.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: Delesyon established HI bölgenin tamamını kapsıyorsa güçlü patojenik kanıt oluşur; aynı koordinat duplikasyon olduğunda TS kanıtı ayrıca aranır.</p></details>
+  </div>
   <div class="tool-list">
     <div class="tool-row"><div class="tool-name">ClinGen Dosage Map</div><div class="tool-desc">Gen/bölge bazında HI (0–3) ve TS (0–3) skorları</div><div class="tool-link"><a href="https://dosage.clinicalgenome.org" target="_blank">Aç ↗</a></div></div>
     <div class="tool-row"><div class="tool-name">GenCC</div><div class="tool-desc">Gen-hastalık validite konsensüs düzeyi</div><div class="tool-link"><a href="https://thegencc.org" target="_blank">Aç ↗</a></div></div>
@@ -755,6 +798,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 3 · Puanlama</div>
   <div class="page-title">Gen Sayısı Değerlendirmesi</div>
   <div class="page-lead">Section 2'de bilinen HI/TS overlap saptanmadıysa devreye girer. Büyük CNV'lerde gen sayısı tek başına patojenite lehine kanıt olabilir.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 3</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> CNV içindeki protein-kodlayan gen sayısının sınıflamaya destekleyici katkısını değerlendirir.</p>
+    <p><strong>Gerekli veri:</strong> Build uyumlu gen listesi, protein-kodlayan gen sayısı, CNV tipi ve Section 2'de güçlü overlap kanıtı olup olmadığı.</p>
+    <p><strong>Adım adım karar:</strong> Önce protein-kodlayan genleri sayın. CNV delesyon ise delesyon eşiklerini, duplikasyon ise duplikasyon eşiklerini kullanın. Gen sayısını tek başına tanısal karar gibi değil, destekleyici kanıt gibi yorumlayın.</p>
+    <p><strong>Ne zaman atlanır?</strong> Section 2'de sınıflamayı belirleyen güçlü ve doğrudan overlap kanıtı varsa Section 3 yorum ağırlığı azalabilir; yine de gen sayısı belgelenmelidir.</p>
+    <details><summary>Sık hata</summary><p>Her büyük CNV'yi otomatik patojenik kabul etmek. Gen sayısı biyolojik bağlam, dosage kanıtı ve diğer bölümlerle birlikte değerlendirilmelidir.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: Çok gen içeren bir duplikasyon destekleyici puan alabilir; ancak TS kanıtı yoksa bu bulgu tek başına klinik tanı anlamına gelmez.</p></details>
+  </div>
   <div class="score-box">
     <div class="score-hdr"><span class="score-label">Section 3 — Gen sayısı</span><span class="score-pts zero" id="s3pts">0.00</span></div>
     <div class="choice-opts">
@@ -776,6 +828,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 4 · Puanlama</div>
   <div class="page-title">Literatür, Veritabanı ve Popülasyon Kanıtı</div>
   <div class="page-lead">Birden fazla kanıt türü bağımsız toplanır. Her alt bölümün ayrı tavanı vardır.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 4</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> Literatür, DECIPHER, ClinVar, ClinGen, case-control çalışmaları, popülasyon verisi ve dış aile segregasyonu gibi harici kanıtları değerlendirir.</p>
+    <p><strong>Gerekli veri:</strong> Yayın ve veritabanı kayıtları, fenotip özgüllüğü, de novo teyit düzeyi, benzer CNV sayısı, kontrol/popülasyon frekansı ve segregasyon bilgisi.</p>
+    <p><strong>Adım adım karar:</strong> Önce benzer olguların fenotip uyumunu ve de novo doğrulama düzeyini belirleyin. Sonra segregasyon, case-control ve popülasyon kanıtlarını ayrı başlıklarda değerlendirin. Her alt bölümün tavanını koruyun.</p>
+    <p><strong>Ne zaman atlanır?</strong> Harici kanıt yoksa uygun "kanıt yok" seçeneğiyle devam edilir; kanıt bulunmaması otomatik benign anlamına gelmez.</p>
+    <details><summary>Sık hata</summary><p>Aynı DECIPHER kaydını hem vaka kanıtı hem segregasyon kanıtı gibi iki kez saymak. Kanıt kaynağı ve kanıt türü ayrı tutulmalıdır.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: Birden fazla benzer CNV kaydı varsa, yalnızca fenotip özgüllüğü ve de novo teyit düzeyi belgelenmiş olanlar güçlü vaka kanıtı olarak kullanılmalıdır.</p></details>
+  </div>
   <div class="tool-list">
     <div class="tool-row"><div class="tool-name">DECIPHER Patients</div><div class="tool-desc">Benzer CNV'li hasta kayıtları, de novo/HPO filtresi</div><div class="tool-link"><a href="https://www.deciphergenomics.org/search/patients" target="_blank">Aç ↗</a></div></div>
     <div class="tool-row"><div class="tool-name">ClinVar</div><div class="tool-desc">Önceki CNV sınıflandırmaları</div><div class="tool-link"><a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">Aç ↗</a></div></div>
@@ -842,6 +903,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 5 · Puanlama</div>
   <div class="page-title">Hastanın Kalıtım Bilgisi</div>
   <div class="page-lead">Bu section klinisyen tarafından doldurulur. Ebeveyn testi yapılmadan de novo varsayılamaz.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 5</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> Mevcut bireye ait aile kanıtını değerlendirir: de novo, etkilenmemiş ebeveynden kalıtım, segregasyon, non-segregasyon veya kalıtım bilgisinin olmaması.</p>
+    <p><strong>Gerekli veri:</strong> Ebeveyn test sonucu, aile öyküsü, etkilenmiş/etkilenmemiş bireylerin test durumu, fenotip özgüllüğü ve kalıtım paterni.</p>
+    <p><strong>Adım adım karar:</strong> Önce ebeveynlerin test edilip edilmediğini kontrol edin. De novo yalnızca ebeveyn testleriyle destekleniyorsa seçin. Kalıtılmış bulgularda ebeveyn fenotipi, penetrans ve aile içi segregasyonu birlikte değerlendirin.</p>
+    <p><strong>Ne zaman atlanır?</strong> Kalıtım bilgisi yoksa atlanmaz; "kalıtım bilgisi yok / bilgilendirici değil" seçeneği ile belirsizlik belgelenir.</p>
+    <details><summary>Sık hata</summary><p>Ebeveyn testi yapılmadan de novo varsaymak. "Anne-baba sağlıklı" bilgisi tek başına de novo kanıtı değildir.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: CNV etkilenmemiş ebeveynde de varsa, fenotip özgüllüğü ve penetrans bilgisi incelenmeden patojenik yönde yorum güçlendirilmemelidir.</p></details>
+  </div>
   <div class="score-box">
     <div class="score-hdr"><span class="score-label">Section 5 — Kalıtım durumu</span><span class="score-pts zero" id="s5pts">0.00</span></div>
     <div class="choice-opts">
@@ -1014,6 +1084,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 
 <!-- ═══════════ SONUÇ EKRANI ═══════════ -->
 <div class="result-screen" id="resultScreen">
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Sonuç ve Rapor</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> Toplam skorun 5 kademeli sınıflamaya dönüşümünü ve rapor özeti için hangi kanıtların görünür hale getirileceğini değerlendirir.</p>
+    <p><strong>Gerekli veri:</strong> Section puanları, toplam skor, seçilen kanıtlar, eksik kanıtlar, fenotip korelasyonu, kalıtım bilgisi ve teknik sınırlılıklar.</p>
+    <p><strong>Adım adım karar:</strong> Önce toplam skoru ve P/LP/VUS/LB/B sınıfını kontrol edin. Sonra varyant düzeyi sınıflamayı hastaya özgü nedensellikten ayırın. Eksik kanıtları ve VUS için takip gereksinimini açık yazın.</p>
+    <p><strong>Ne zaman atlanır?</strong> Atlanmaz; sonuç ekranı skorun klinik bağlama nasıl aktarılacağını denetlemek için gereklidir.</p>
+    <details><summary>Sık hata</summary><p>VUS sonucunu negatif veya tanısal gibi raporlamak. VUS için yeniden değerlendirme, ebeveyn çalışması ve veri tabanı/literatür takibi gerekebilir.</p></details>
+    <details><summary>Mini örnek</summary><p>Sentetik örnek: Toplam skor VUS aralığındaysa rapor özeti "tanı koydurucu" dil kullanmamalı; hangi ek kanıtların sınıfı değiştirebileceği belirtilmelidir.</p></details>
+  </div>
 
   <div class="result-summary">
     <div class="eyebrow">Değerlendirme Sonucu</div>
