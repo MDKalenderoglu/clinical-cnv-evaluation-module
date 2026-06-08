@@ -147,6 +147,9 @@ a:hover{border-bottom-color:var(--blue);text-decoration:none}
   transition:background .25s;
 }
 .hdr-brand{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.hdr-brand.home-link{cursor:pointer;border-radius:6px;padding:3px 6px;margin:-3px -6px;outline:none}
+.hdr-brand.home-link:focus-visible{box-shadow:0 0 0 3px var(--blue-bg)}
+.hdr-brand.home-link:hover .hdr-title{color:var(--blue)}
 .hdr-title{
   font-family:'Merriweather',Georgia,serif;
   font-size:17px;font-weight:700;
@@ -341,6 +344,19 @@ select.form-inp{
 .photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:6px;display:none;margin-top:12px}
 .photo-placeholder{font-size:13.5px;color:var(--txt3);pointer-events:none}
 .photo-placeholder-icon{font-size:24px;margin-bottom:8px;display:block;color:var(--txt4);font-family:"JetBrains Mono",monospace}
+.thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;margin-top:12px}
+.thumb-card{position:relative;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);padding:6px}
+.thumb-card img{width:100%;height:82px;object-fit:cover;border-radius:4px;display:block}
+.thumb-remove{position:absolute;top:4px;right:4px;border:1px solid var(--border2);background:var(--surface);color:var(--red);border-radius:4px;font-size:11px;padding:2px 6px;cursor:pointer}
+.thumb-name{font-size:10.5px;color:var(--txt3);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.helper-output{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;background:var(--bg2);border:1.5px solid var(--border);border-radius:5px;padding:10px;color:var(--txt2);min-height:44px;white-space:pre-wrap}
+.parse-summary{font-size:13px;color:var(--txt2);line-height:1.6;margin-top:10px}
+.pref-summary{border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);padding:12px 14px;margin-bottom:14px}
+.pref-summary-title{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
+.rc-photo-gallery{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.rc-photo-gallery img{width:72px;height:72px;border-radius:6px;object-fit:cover;border:2px solid var(--border2)}
+.glossary-mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:12px}
+.glossary-mini .rc-field{background:var(--surface)}
 
 /* ── DÜĞMELER ── */
 .btn{font-family:'Inter',sans-serif;font-size:13.5px;padding:9px 20px;border-radius:5px;border:1.5px solid var(--border2);background:var(--surface);color:var(--txt2);cursor:pointer;transition:.15s;font-weight:500}
@@ -495,13 +511,13 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 <div class="hdr">
   <div class="hdr-left">
     <button class="hamburger" onclick="toggleMob()" aria-label="Menü">☰</button>
-    <div class="hdr-brand">
+    <div class="hdr-brand home-link" onclick="goHome()" onkeydown="homeKey(event)" role="button" tabindex="0" title="Ana sayfaya dön" aria-label="Ana sayfaya dön">
       <div class="hdr-title">Klinik CNV Değerlendirme Modülü</div>
       <div class="hdr-sub">ACMG/ClinGen CNV sınıflandırma çerçevesine dayalı yapılandırılmış eğitim ve karar destek aracı</div>
     </div>
   </div>
   <div class="hdr-right">
-    <button class="btn-danger btn-sm" onclick="resetAll()">Tümü Sıfırla</button>
+    <button class="btn-danger btn-sm" onclick="resetAll()" title="Puanlama ve mevcut seçimleri sıfırla">Sıfırla</button>
     <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">Koyu Tema</button>
     <div class="live-badge vus" id="liveBadge">0.00 · VUS</div>
   </div>
@@ -548,19 +564,40 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <!-- Hasta Fotoğrafı -->
   <div class="form-sec">Ek Fenotip Görseli — Onamlı / Lokal Kullanım</div>
   <div class="form-group full">
-    <label class="form-lbl">Fenotip Görseli (isteğe bağlı)</label>
+    <label class="form-lbl">Ek Fenotip Görselleri — Onamlı / Lokal Kullanım</label>
     <div class="photo-upload-area" id="photoUploadArea">
-      <input type="file" id="ptPhoto" accept="image/*" onchange="handlePhoto(this)">
+      <input type="file" id="ptPhoto" accept="image/*" multiple onchange="handlePhoto(this)">
       <div class="photo-placeholder" id="photoPlaceholder">
         <div style="font-size:24px;margin-bottom:8px;color:var(--txt4);font-weight:300;font-family:'JetBrains Mono',monospace">[+]</div>
-        <div style="font-weight:600;font-size:13.5px;color:var(--txt2)">Fenotip Görseli Ekle</div>
-        <div style="font-size:12px;margin-top:4px;color:var(--txt3)">JPG, PNG — tıklayın veya sürükleyin</div>
+        <div style="font-weight:600;font-size:13.5px;color:var(--txt2)">Fenotip Görselleri Ekle</div>
+        <div style="font-size:12px;margin-top:4px;color:var(--txt3)">Birden fazla JPG/PNG seçilebilir</div>
       </div>
-      <img id="photoPreview" class="photo-preview" alt="Fenotip görseli">
     </div>
+    <div class="thumb-grid" id="photoPreviewGrid"></div>
     <div class="note note-teal" style="margin-top:10px">
       <span class="note-icon">i</span>
-      <span>Bu alan isteğe bağlıdır. Görsel yalnızca lokal tarayıcı oturumunda kullanılır; sunucuya gönderilmez ve yerel depolamaya yazılmaz. Kurumsal onam ve veri güvenliği sorumluluğu kullanıcıya aittir.</span>
+      <span>Birden fazla görsel eklenebilir. Görseller yalnızca tarayıcı oturumunda önizlenir; sunucuya gönderilmez ve yerel depolamaya yazılmaz. Kurumsal onam ve veri güvenliği sorumluluğu kullanıcıya aittir.</span>
+    </div>
+  </div>
+
+  <div class="form-sec">Hasta Rapor Sonucu / Array Çıktısı</div>
+  <div class="form-grid">
+    <div class="form-group full"><label class="form-lbl">Yapıştırılan rapor sonucu</label><textarea class="form-inp" id="ptReportText" placeholder="Örn. arr[GRCh38] 7q11.23(72846244_74187855)x1 veya DEL:Chr7:72846244-74187855"></textarea></div>
+    <div class="form-group full"><label class="form-lbl">Kısa not (isteğe bağlı)</label><input class="form-inp" id="ptReportNote" placeholder="Örn. Kullanıcı tarafından manuel doğrulama bekliyor"></div>
+    <div class="form-group full">
+      <div class="nav-btns" style="flex-wrap:wrap">
+        <button class="btn" type="button" onclick="parseReportText()">Rapor metninden alanları doldur</button>
+        <button class="btn" type="button" onclick="generateFranklinOutput()">Franklin çıktısı oluştur</button>
+      </div>
+      <div class="parse-summary" id="parseSummary"></div>
+    </div>
+    <div class="form-group full">
+      <label class="form-lbl">Franklin'e yapıştırmak için yardımcı format</label>
+      <textarea class="form-inp" id="ptFranklinOutput" readonly placeholder="Franklin için kopyalanabilir CNV formatı burada oluşur"></textarea>
+      <div class="nav-btns" style="margin-top:8px;align-items:center">
+        <button class="btn-outline btn" type="button" onclick="copyFranklinOutput()">Kopyala</button>
+        <span class="parse-summary" id="franklinStatus"></span>
+      </div>
     </div>
   </div>
 
@@ -580,7 +617,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="form-grid">
     <div class="form-group"><label class="form-lbl">Test Tipi</label><select class="form-inp" id="ptTestType"><option value="">Seçin</option><option>SNP-array</option><option>aCGH</option><option>Diğer</option></select></div>
     <div class="form-group"><label class="form-lbl">Platform</label><input class="form-inp" id="ptPlatform" placeholder="Örn: CytoScan HD, Illumina GSA"></div>
-    <div class="form-group"><label class="form-lbl">Genome Build</label><select class="form-inp" id="ptBuild"><option value="GRCh38">GRCh38 / hg38</option><option value="GRCh37">GRCh37 / hg19</option></select></div>
+    <div class="form-group"><label class="form-lbl">Genome Build</label><select class="form-inp" id="ptBuild"><option value="">Seçin / rapordan doğrulayın</option><option value="GRCh38">GRCh38 / hg38</option><option value="GRCh37">GRCh37 / hg19</option></select></div>
     <div class="form-group"><label class="form-lbl">Ebeveyn Testi Durumu</label><select class="form-inp" id="ptParent"><option value="">Seçin</option><option>Her iki ebeveyn test edildi</option><option>Yalnız anne test edildi</option><option>Yalnız baba test edildi</option><option>Ebeveyn testi yapılmadı</option><option>Bilgi yok</option></select></div>
   </div>
 
@@ -603,8 +640,8 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <!-- Kullanım Tercihleri -->
   <div class="form-sec">Kullanım Tercihleri</div>
   <div class="form-grid">
-    <div class="form-group"><label class="form-lbl">Kullanım Modu</label><select class="form-inp" id="ptMode" onchange="applyMode(this.value)"><option value="egitim">Eğitim Modu</option><option value="klinik">Klinik Hızlı Değerlendirme</option><option value="raporlama">Raporlama Modu</option></select></div>
-    <div class="form-group"><label class="form-lbl">Çıktı Tercihi</label><select class="form-inp" id="ptOutput"><option value="dosya">Hasta dosyası özeti</option><option value="konsey">Konsey sunumu</option><option value="rapor">Klinik rapor notu</option><option value="egitim">Eğitim çıktısı</option></select></div>
+    <div class="form-group"><label class="form-lbl">Kullanım Modu</label><select class="form-inp" id="ptMode" onchange="applyMode(this.value)"><option value="egitim">Eğitim Modu</option><option value="klinik">Klinik Hızlı Değerlendirme</option><option value="raporlama">Detaylı Akademik Değerlendirme</option></select></div>
+    <div class="form-group"><label class="form-lbl">Çıktı Tercihi</label><select class="form-inp" id="ptOutput"><option value="dosya">Hasta dosyası özeti</option><option value="konsey">Konsey sunumu</option><option value="rapor">Klinik rapor notu</option><option value="danismanlik">Danışmanlık öncesi özet</option><option value="egitim">Eğitim çıktısı</option></select></div>
     <div class="form-group"><label class="form-lbl">Açıklama Düzeyi</label><select class="form-inp" id="ptExplainLevel"><option value="orta">Orta — karar + gerekçe + eksik kanıt</option><option value="kisa">Kısa — yalnızca karar, puan ve kısa klinik çıkarım</option><option value="detayli">Detaylı — eğitim açıklaması + mekanizma + sık hata uyarıları</option></select></div>
   </div>
 
@@ -717,7 +754,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="score-box">
     <div class="score-hdr"><span class="score-label">Section 1 — Seçiminizi yapın</span><span class="score-pts zero" id="s1pts">0.00</span></div>
     <div class="choice-opts">
-      <div class="choice-opt" onclick="pick('s1','1A',0,'İntragenik CNV: her iki breakpoint aynı gen içinde. Section 2E veya 2I kriterlerine geçin.',this)"><div class="co-radio"></div><div class="co-text"><strong>1A — İntragenik CNV:</strong> Her iki breakpoint aynı gen içinde → Section 2E veya 2I</div><div class="co-pts zero">0</div></div>
+      <div class="choice-opt" onclick="pick('s1','1A',0,'İntragenik CNV: önce CNV tipini doğrulayın. Delesyon/loss için Section 2E; duplikasyon/gain için DUP intragenik kriterleri değerlendirilir. DUP 2I yalnızca duplikasyon metriği aktifken görünür.',this)"><div class="co-radio"></div><div class="co-text"><strong>1A — İntragenik CNV:</strong> Önce CNV tipini doğrulayın. Delesyon/loss için Section 2E; duplikasyon/gain için DUP intragenik kriterleri değerlendirilir. DUP 2I yalnızca duplikasyon metriği aktifken görünür.</div><div class="co-pts zero">0</div></div>
       <div class="choice-opt" onclick="pick('s1','1Ab',0,'Protein-kodlayan gen var. Değerlendirmeye devam edin.',this)"><div class="co-radio"></div><div class="co-text"><strong>1A — Gen var:</strong> CNV protein-kodlayan gen veya bilinen fonksiyonel element içeriyor</div><div class="co-pts zero">0</div></div>
       <div class="choice-opt" onclick="pick('s1','1B',-0.60,'Gen yok: −0.60 puan. Benign yönünde kanıt.',this)"><div class="co-radio"></div><div class="co-text"><strong>1B — Gen yok:</strong> CNV protein-coding veya fonksiyonel element içermiyor</div><div class="co-pts neg">−0.60</div></div>
     </div>
@@ -1017,6 +1054,13 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Kaynak</div>
   <div class="page-title">Kavram Rehberi</div>
   <div class="page-lead">Puanlama sürecinde karşılaşılan temel kavramların kısa tanımları.</div>
+  <div class="glossary-mini">
+    <div class="rc-field"><div class="rc-field-lbl">ACMG/ClinGen uncoupled ilkesi</div><div class="rc-field-val">CNV'nin kanıta dayalı sınıfı ile bu CNV'nin mevcut hastadaki klinik nedenselliği aynı şey değildir. Fenotip, kalıtım ve klinik korelasyon ayrıca değerlendirilir.</div></div>
+    <div class="rc-field"><div class="rc-field-lbl">Established</div><div class="rc-field-val">ClinGen veya benzeri güvenilir kaynaklarda yeterli kanıtla dozaj duyarlılığı veya benignliği desteklenmiş gen/bölge.</div></div>
+    <div class="rc-field"><div class="rc-field-lbl">Overlap</div><div class="rc-field-val">CNV aralığının bir gen, bölge veya bilinen CNV bölgesi ile koordinat düzeyinde kesişmesi. Tam ve parsiyel overlap aynı yorumlanmaz.</div></div>
+    <div class="rc-field"><div class="rc-field-lbl">HI</div><div class="rc-field-val">Haploinsufficiency. Bir genin tek çalışan kopyasının kaybının hastalık mekanizması oluşturabildiği dozaj duyarlılığı durumu.</div></div>
+    <div class="rc-field"><div class="rc-field-lbl">TS</div><div class="rc-field-val">Triplosensitivity. Bir genin veya bölgenin ek kopyasının hastalık mekanizması oluşturabildiği dozaj duyarlılığı durumu.</div></div>
+  </div>
   <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-blue">Temel</span><div><div class="panel-title">Prob, Log2 Ratio, BAF</div></div><span class="panel-chev">▼</span></div>
   <div class="panel-body">
     <p>Her prob genomdaki belirli bir koordinata bağlanır ve o noktada kopya sayısını ölçer. <strong>Log2 Ratio:</strong> Normal 2 kopya = 0; delesyon &lt;0; duplikasyon &gt;0. <strong>BAF:</strong> Yalnızca SNP-array'de bulunur. Normal heterozigot bölgede 0, 0.5 ve 1 bantları görülür. 0.5 bandının kaybolması → CN-LOH → UPD şüphesi.</p>
@@ -1101,6 +1145,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
     <div class="result-patient-line" id="resPatientLine"></div>
   </div>
 
+  <div class="pref-summary" id="prefSummary">
+    <div class="pref-summary-title">Kullanım Tercihine Göre Çıktı</div>
+    <div id="prefSummaryText"></div>
+  </div>
+
   <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-blue">Skor</span><div><div class="panel-title">Section Bazlı Puan Dökümü</div></div><span class="panel-chev">▼</span></div>
   <div class="panel-body"><div class="bar-chart" id="barChart"></div></div></div>
 
@@ -1146,6 +1195,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
         <img id="rcPhotoImg" class="rc-photo" alt="Fenotip görseli">
         <div id="rcPatientSummary" style="font-size:14px;color:var(--txt);line-height:1.6"></div>
       </div>
+      <div class="rc-photo-gallery" id="rcPhotoGallery"></div>
     </div>
 
     <div class="rc-section"><div class="rc-section-title">Olgu Bilgisi</div><div class="rc-grid" id="rcPatFields"></div></div>
@@ -1177,6 +1227,16 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
       <div class="rc-notes" id="rcReportContextTxt"></div>
     </div>
 
+    <div class="rc-section" id="rcSourceReportSec" style="display:none">
+      <div class="rc-section-title">Kaynak rapor metni / kullanıcı girdisi</div>
+      <div class="rc-notes" id="rcSourceReportTxt"></div>
+    </div>
+
+    <div class="rc-section" id="rcFranklinSec" style="display:none">
+      <div class="rc-section-title">Franklin yardımcı formatı</div>
+      <div class="rc-notes" id="rcFranklinTxt"></div>
+    </div>
+
     <div class="rc-section"><div class="rc-section-title">Sürüm ve Sınırlılıklar</div><div class="rc-notes">Bu modül eğitim ve yapılandırılmış karar destek amacıyla geliştirilmiş prototip bir araçtır. Klinik raporun veya uzman değerlendirmesinin yerini almaz. CNV sınıflaması Riggs et al. 2020 ACMG/ClinGen teknik standartlarına dayalıdır. Hastaya özgü nedensellik yorumu fenotip, kalıtım, teknik doğrulama ve klinik korelasyon ile birlikte uzman tarafından yapılmalıdır. Yerel validasyon ve kalite kontrol tamamlanmadan rutin klinik karar mekanizması olarak kullanılmamalıdır.</div></div>
     <div class="rc-section"><div class="rc-section-title">Validasyon Durumu</div><div class="rc-notes">• Eğitim/prototip sürümü
 • Manuel vaka karşılaştırması önerilir
@@ -1192,7 +1252,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 
   <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn" onclick="goTo(6)">← Puanlamaya Dön</button>
-    <button class="btn-danger btn-sm" onclick="resetAll()">Tümü Sıfırla</button>
+    <button class="btn-danger btn-sm" onclick="resetAll()" title="Puanlama ve mevcut seçimleri sıfırla">Sıfırla</button>
   </div>
 </div>
 
@@ -1208,7 +1268,7 @@ var cur=-1;
 var cnvT=null;
 var s4aPPCase=0, s4aKey="";
 var pat={};
-var photoB64="";
+var photoItems=[];
 
 /* -- HASTA STATE SENKRONIZASYONU -- */
 function syncPatientState(){
@@ -1219,7 +1279,7 @@ function syncPatientState(){
     cnvType:gv("ptCnvType"),coord:gv("ptCoord"),size:gv("ptSize"),
     labClass:gv("ptLabClass"),genes:gv("ptGenes"),
     mode:gv("ptMode"),output:gv("ptOutput"),cytoband:gv("ptCytoband"),copyState:gv("ptCopyState"),iscn:gv("ptISCN"),geneCount:gv("ptGeneCount"),transcript:gv("ptTranscript"),reportCat:gv("ptReportCat"),
-    explainLevel:gv("ptExplainLevel")
+    explainLevel:gv("ptExplainLevel"),reportText:gv("ptReportText"),reportNote:gv("ptReportNote"),franklinOutput:gv("ptFranklinOutput")
   };
 }
 
@@ -1241,19 +1301,39 @@ function toggleTheme(){
   }catch(e){}
 })();
 
-/* -- HASTA FOTOGRAFI -- */
+/* -- HASTA FOTOGRAFLARI -- */
 function handlePhoto(inp){
-  var file=inp.files[0];
-  if(!file)return;
-  var r=new FileReader();
-  r.onload=function(e){
-    photoB64=e.target.result;
-    document.getElementById("photoPreview").src=photoB64;
-    document.getElementById("photoPreview").style.display="block";
-    document.getElementById("photoPlaceholder").style.display="none";
-    document.getElementById("photoUploadArea").style.borderStyle="solid";
-  };
-  r.readAsDataURL(file);
+  var files=Array.prototype.slice.call(inp.files||[]);
+  files.filter(function(f){return f.type&&f.type.indexOf("image/")===0}).forEach(function(file){
+    var r=new FileReader();
+    r.onload=function(e){
+      photoItems.push({name:file.name,data:e.target.result});
+      renderPhotoPreviews();
+    };
+    r.readAsDataURL(file);
+  });
+  inp.value="";
+}
+function renderPhotoPreviews(){
+  var grid=document.getElementById("photoPreviewGrid");
+  var ph=document.getElementById("photoPlaceholder");
+  var area=document.getElementById("photoUploadArea");
+  if(!grid)return;
+  grid.innerHTML="";
+  photoItems.forEach(function(item,idx){
+    var card=document.createElement("div");card.className="thumb-card";
+    var img=document.createElement("img");img.src=item.data;img.alt="Fenotip görseli önizleme";
+    var btn=document.createElement("button");btn.type="button";btn.className="thumb-remove";btn.textContent="Kaldır";
+    btn.onclick=function(){removePhoto(idx)};
+    var nm=document.createElement("div");nm.className="thumb-name";nm.textContent=item.name||"Görsel";
+    card.appendChild(img);card.appendChild(btn);card.appendChild(nm);grid.appendChild(card);
+  });
+  if(ph)ph.style.display=photoItems.length?"none":"block";
+  if(area)area.style.borderStyle=photoItems.length?"solid":"dashed";
+}
+function removePhoto(idx){
+  photoItems.splice(idx,1);
+  renderPhotoPreviews();
 }
 
 /* -- MOBIL MENU -- */
@@ -1274,6 +1354,138 @@ function saveAndContinue(){
 }
 function gv(id){var e=document.getElementById(id);return e?(e.value||""):""}
 function applyMode(m){document.body.setAttribute("data-mode",m||"egitim")}
+function goHome(){goTo(-1)}
+function homeKey(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();goHome();}}
+
+/* -- RAPOR METNI AYRISTIRMA / FRANKLIN YARDIMCI FORMAT -- */
+function setFieldIfSafe(id,val,label){
+  if(!val)return false;
+  var el=document.getElementById(id);if(!el)return false;
+  var cur=(el.value||"").trim();
+  if(cur&&cur!==val){
+    if(!confirm((label||id)+" alanı dolu. Mevcut değer değiştirilsin mi?\n\nMevcut: "+cur+"\nYeni: "+val))return false;
+  }
+  el.value=val;return true;
+}
+function parseReportText(){
+  var txt=gv("ptReportText");
+  var sum=document.getElementById("parseSummary");
+  if(!txt.trim()){
+    if(sum)sum.textContent="Rapor metni boş. Lütfen önce array/CNV sonucunu yapıştırın.";
+    return;
+  }
+  var parsed={}, clean=txt.replace(/,/g,"");
+  var build=clean.match(/\b(GRCh37|GRCh38|hg19|hg38)\b/i);
+  if(build){
+    var b=build[1].toLowerCase();
+    parsed.build=(b==="hg19"||b==="grch37")?"GRCh37":"GRCh38";
+  }
+  var direct=clean.match(/\b(DEL|DUP)\s*:\s*Chr?([0-9XYM]+)\s*:\s*(\d+)\s*-\s*(\d+)/i);
+  if(direct){
+    parsed.type=direct[1].toUpperCase()==="DEL"?"del":"dup";
+    parsed.chr=direct[2];parsed.start=direct[3];parsed.end=direct[4];
+    parsed.coord="chr"+parsed.chr+":"+parsed.start+"-"+parsed.end;
+  }
+  var arr=clean.match(/arr\s*\[\s*(GRCh37|GRCh38|hg19|hg38)\s*\]\s*([0-9XYM]+[pq][0-9A-Za-z.\-]*)?\s*\(\s*(\d+)\s*_\s*(\d+)\s*\)\s*x\s*(\d+)/i);
+  if(arr){
+    var ab=arr[1].toLowerCase();
+    parsed.build=(ab==="hg19"||ab==="grch37")?"GRCh37":"GRCh38";
+    parsed.cytoband=arr[2]||"";
+    parsed.chr=parsed.cytoband?parsed.cytoband.match(/^([0-9XYM]+)/i)[1]:parsed.chr;
+    parsed.start=arr[3];parsed.end=arr[4];parsed.copy=arr[5];
+    if(parsed.chr)parsed.coord="chr"+parsed.chr+":"+parsed.start+"-"+parsed.end;
+    parsed.iscn=arr[0];
+    if(parsed.copy==="1")parsed.type="del";
+    else if(parseInt(parsed.copy,10)>=3)parsed.type="dup";
+  }
+  if(/\bSNP[- ]?array\b/i.test(clean))parsed.testType="SNP-array";
+  if(/\baCGH\b/i.test(clean))parsed.testType="aCGH";
+  if(parsed.copy==="1")parsed.copyState="Tek kopya kaybı (1×)";
+  if(parsed.copy==="3")parsed.copyState="Tek kopya kazanımı (3×)";
+  if(parsed.copy&&parseInt(parsed.copy,10)>=4)parsed.copyState="Triplikasyon (4×)";
+  if(parsed.start&&parsed.end){
+    var bp=Math.abs(parseInt(parsed.end,10)-parseInt(parsed.start,10))+1;
+    parsed.size=bp>=1000000?(bp/1000000).toFixed(2)+" Mb":Math.round(bp/1000)+" kb";
+  }
+
+  var changed=[];
+  if(setFieldIfSafe("ptBuild",parsed.build,"Genome Build"))changed.push("build");
+  if(setFieldIfSafe("ptCnvType",parsed.type,"CNV Tipi"))changed.push("CNV tipi");
+  if(setFieldIfSafe("ptCoord",parsed.coord,"CNV Koordinatı"))changed.push("koordinat");
+  if(setFieldIfSafe("ptSize",parsed.size,"CNV Boyutu"))changed.push("boyut");
+  if(setFieldIfSafe("ptCytoband",parsed.cytoband,"Sitogenetik Bant"))changed.push("cytoband");
+  if(setFieldIfSafe("ptCopyState",parsed.copyState,"Kopya Sayısı Durumu"))changed.push("kopya durumu");
+  if(setFieldIfSafe("ptISCN",parsed.iscn,"ISCN Notasyonu"))changed.push("ISCN");
+  if(setFieldIfSafe("ptTestType",parsed.testType,"Test Tipi"))changed.push("test tipi");
+
+  var msg;
+  if(parsed.coord||parsed.type||parsed.build){
+    msg="Ayrıştırma özeti: CNV tipi="+(parsed.type||"belirsiz")+", build="+(parsed.build||"belirsiz")+", kromozom="+(parsed.chr||"belirsiz")+", start="+(parsed.start||"belirsiz")+", end="+(parsed.end||"belirsiz")+", cytoband="+(parsed.cytoband||"belirsiz")+", kopya="+(parsed.copy||"belirsiz")+". Manuel doğrulama gereklidir.";
+  }else{
+    msg="Rapor metni otomatik ayrıştırılamadı; lütfen CNV tipi, build ve koordinatları manuel kontrol edin.";
+  }
+  if(changed.length)msg+=" Doldurulan alanlar: "+changed.join(", ")+".";
+  if(sum)sum.textContent=msg;
+  generateFranklinOutput();
+}
+function inferTypePrefix(){
+  var t=gv("ptCnvType"),cs=gv("ptCopyState");
+  if(t==="del"||/kayb/i.test(cs))return"DEL";
+  if(t==="dup"||/kazan|Trip/i.test(cs))return"DUP";
+  return"CNV";
+}
+function copyNumberToken(){
+  var cs=gv("ptCopyState");
+  if(/1/.test(cs))return"x1";
+  if(/4/.test(cs))return"x4";
+  if(/3/.test(cs))return"x3";
+  return inferTypePrefix()==="DEL"?"x1":inferTypePrefix()==="DUP"?"x3":"";
+}
+function generateFranklinOutput(){
+  var out=document.getElementById("ptFranklinOutput"),status=document.getElementById("franklinStatus");
+  if(!out)return;
+  var coord=gv("ptCoord").replace(/\s+/g,"");
+  var build=gv("ptBuild"),cyto=gv("ptCytoband"),iscn=gv("ptISCN");
+  var prefix=inferTypePrefix();
+  var helper="";
+  if(prefix!=="CNV"&&coord)helper=prefix+":"+coord.replace(/^chr/i,"Chr");
+  if(iscn)helper+=(helper?" ":"")+iscn;
+  else if(build){
+    helper+=(helper?" ":"")+"arr["+build+"]";
+    if(cyto&&coord){
+      var m=coord.match(/chr[0-9XYM]+:(\d+)-(\d+)/i);
+      if(m)helper+=" "+cyto+"("+m[1]+"_"+m[2]+")"+copyNumberToken();
+    }
+  }
+  out.value=helper;
+  if(status)status.textContent=build?"Franklin'e yapıştırmadan önce koordinat/build bilgisini manuel doğrulayın.":"Genome build eksik; Franklin çıktısını kullanmadan önce build bilgisini doğrulayın.";
+  return helper;
+}
+function copyFranklinOutput(){
+  var out=document.getElementById("ptFranklinOutput"),status=document.getElementById("franklinStatus");
+  if(!out||!out.value){if(status)status.textContent="Kopyalanacak Franklin çıktısı yok.";return;}
+  out.select();
+  var done=function(){if(status)status.textContent="Franklin çıktısı kopyalandı.";};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(out.value).then(done).catch(function(){document.execCommand("copy");done();});}
+  else{document.execCommand("copy");done();}
+}
+function preferenceOutputText(cl,s,miss,evP){
+  var mode=gv("ptMode")||"egitim",output=gv("ptOutput")||"dosya",level=gv("ptExplainLevel")||"orta";
+  var lines=[];
+  lines.push("Tercih: "+mode+" / "+output+" / "+level+".");
+  if(level==="kisa")lines.push("Kısa çıktı: "+cl.cls+", toplam skor "+(s>=0?"+":"")+s.toFixed(2)+". Ana eksik kanıt: "+(miss[0]||"belirgin değil")+".");
+  else if(level==="detayli")lines.push("Detaylı çıktı: section puanları, klinik korelasyon, sınırlılıklar ve eksik kanıtlar birlikte gösterilir. Ana kanıtlar: "+(evP.length?evP.join("; "):"henüz seçilmedi")+".");
+  else lines.push("Orta çıktı: karar, kısa gerekçe, eksik kanıt ve önerilen sonraki adımlar birlikte sunulur.");
+  if(output==="rapor")lines.push("Klinik rapor notu dili: kısa, doğrulanabilir ve uzman değerlendirmesine açık tutulmalıdır.");
+  else if(output==="egitim")lines.push("Eğitim özeti dili: section bazlı öğrenme notları ve sınırlılıklar vurgulanır.");
+  else if(output==="danismanlik")lines.push("Danışmanlık öncesi özet: aileye ne söylenebileceği, ne söylenemeyeceği, eksik kanıtlar ve ek test gereksinimleri ayrılır.");
+  else if(output==="konsey")lines.push("Danışmanlık/konsey özeti: aileye ne söylenebileceği, ne söylenemeyeceği ve hangi ek testlerin gerektiği ayrılır.");
+  else lines.push("Hasta dosyası özeti: karar, skor, eksik kanıt ve takip planı dosya notu formatında özetlenir.");
+  if(mode==="klinik")lines.push("Klinik hızlı değerlendirme: öncelikli sonraki adımlar ve doğrulama gereksinimleri öne çıkarılır.");
+  else if(mode==="raporlama")lines.push("Detaylı akademik/raporlama modu: kanıt kategorileri ve sınırlılıklar daha yapılandırılmış verilir.");
+  else lines.push("Eğitim modu: varyant sınıfı ile hastaya özgü klinik nedensellik ayrımı özellikle görünür tutulur.");
+  return lines.join(" ");
+}
 
 /* -- NAVIGASYON -- */
 function goTo(n){
@@ -1391,8 +1603,6 @@ function resetAll(){
   var cc=document.getElementById("s4aCaseCount");if(cc)cc.value=1;
   var rc=document.getElementById("reportCard");if(rc)rc.classList.remove("visible");
   var db=document.getElementById("downloadBtns");if(db)db.style.display="none";
-  var pp=document.getElementById("photoPreview");if(pp){pp.src="";pp.style.display="none";}
-  var ph=document.getElementById("photoPlaceholder");if(ph)ph.style.display="block";
   updBadge();
 }
 
@@ -1445,6 +1655,9 @@ function renderResult(){
   if(cl.code==="vus")miss.push("VUS olarak kal\u0131yorsa 12\u201324 ay sonra yeniden de\u011ferlendirme planlay\u0131n");
   document.getElementById("resMissing").innerHTML=miss.length?"<ul>"+miss.map(function(m){return"<li>"+m+"</li>"}).join("")+"</ul>":"<p>Belirgin eksik kan\u0131t saptanmam\u0131\u015ft\u0131r.</p>";
 
+  var pref=document.getElementById("prefSummaryText");
+  if(pref)pref.textContent=preferenceOutputText(cl,s,miss,evP);
+
   var nxt={
     p:"<ul><li>Fenotip uyumunu, kal\u0131t\u0131m\u0131 ve klinik korelasyonu birlikte de\u011ferlendirin</li><li>Sendrom-spesifik takip plan\u0131 ba\u015flat\u0131n</li><li>Aile \u00fcyelerine bilgilendirme ve test \u00f6nerin</li></ul>",
     lp:"<ul><li>Ebeveyn testi ile de novo durumunu teyit edin</li><li>DECIPHER/ClinVar veritabanlarinda yeni vaka kontrol\u00fc yap\u0131n</li><li>Fenotip korelasyonunu g\u00fc\u00e7lendirmeye \u00e7al\u0131\u015f\u0131n</li></ul>",
@@ -1474,8 +1687,14 @@ function genReport(){
   var d1=document.createElement("div");d1.textContent=date;meta.appendChild(d1);
   if(pat.id){var d2=document.createElement("div");d2.textContent=pat.id;meta.appendChild(d2);}
 
-  var rpi=document.getElementById("rcPhotoImg");
-  if(photoB64){rpi.src=photoB64;rpi.style.display="block";}else{rpi.style.display="none";}
+  var rpi=document.getElementById("rcPhotoImg"),gallery=document.getElementById("rcPhotoGallery");
+  if(photoItems.length){rpi.src=photoItems[0].data;rpi.style.display="block";}else{rpi.style.display="none";}
+  if(gallery){
+    gallery.innerHTML="";
+    photoItems.slice(1).forEach(function(item){
+      var img=document.createElement("img");img.src=item.data;img.alt="Ek fenotip görseli";gallery.appendChild(img);
+    });
+  }
   var psum=document.getElementById("rcPatientSummary");
   var pp=[];
   if(pat.id)pp.push(esc(pat.id));
@@ -1510,7 +1729,8 @@ function genReport(){
     if(cat.indexOf("Ta\u015f\u0131y\u0131c\u0131")>=0||cat.indexOf("Tasiyicilik")>=0){
       ctxTxt+=". Tek allelik delesyon, otozomal resesif hastal\u0131k i\u00e7in ta\u015f\u0131y\u0131c\u0131l\u0131k g\u00f6sterebilir; etkilenen durum tan\u0131s\u0131 i\u00e7in ikinci patojenik allelin g\u00f6sterilmesi gerekir.";
     }
-    rctx.textContent=ctxTxt||"Belirtilmemi\u015f";
+    var prefTxt=preferenceOutputText(cl,s,[],[]);
+    rctx.textContent=(ctxTxt||"Belirtilmemi\u015f")+" "+prefTxt;
   }
 
   var grid=document.getElementById("rcScoreGrid");
@@ -1538,6 +1758,21 @@ function genReport(){
   var notes=document.getElementById("rcNotes").value;
   var ns=document.getElementById("rcNotesSec"),nt=document.getElementById("rcNotesTxt");
   if(notes&&ns&&nt){ns.style.display="block";nt.textContent=notes;}else if(ns){ns.style.display="none";}
+
+  var srcSec=document.getElementById("rcSourceReportSec"),srcTxt=document.getElementById("rcSourceReportTxt");
+  if(srcSec&&srcTxt){
+    var sourceParts=[];
+    if(pat.reportText)sourceParts.push(pat.reportText);
+    if(pat.reportNote)sourceParts.push("Not: "+pat.reportNote);
+    if(sourceParts.length){srcSec.style.display="block";srcTxt.textContent=sourceParts.join("\n\n");}
+    else srcSec.style.display="none";
+  }
+  var frSec=document.getElementById("rcFranklinSec"),frTxt=document.getElementById("rcFranklinTxt");
+  if(frSec&&frTxt){
+    var f=pat.franklinOutput||generateFranklinOutput();
+    if(f){frSec.style.display="block";frTxt.textContent=f;}
+    else frSec.style.display="none";
+  }
 
   document.getElementById("reportCard").classList.add("visible");
   document.getElementById("downloadBtns").style.display="flex";
