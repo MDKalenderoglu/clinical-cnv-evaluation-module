@@ -418,6 +418,10 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 .tag-gray{background:var(--bg2);border:1.5px solid var(--border);color:var(--txt3)}
 .tag-purple{background:var(--purple-bg);border:1.5px solid var(--purple-b);color:var(--purple)}
 .tag-teal{background:var(--teal-bg);border:1.5px solid var(--teal-b);color:var(--teal)}
+.guide-panel{border:1.5px solid var(--blue-b);border-left:4px solid var(--blue);border-radius:7px;background:var(--blue-bg);padding:14px 16px;margin:16px 0 18px}
+.guide-title{font-family:'JetBrains Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);font-weight:700;margin-bottom:7px}
+.guide-panel p{font-size:13.5px;line-height:1.65;margin:0 0 7px;color:var(--txt2)}
+.guide-panel p:last-child{margin-bottom:0}
 .feedback-box{border-radius:5px;padding:10px 14px;margin-top:10px;font-size:13px;display:none;background:var(--blue-bg);border:1.5px solid var(--blue-b);color:var(--blue);line-height:1.55}
 .feedback-box.vis{display:block}
 .section-divider{height:2px;background:var(--border);margin:18px 0}
@@ -617,6 +621,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Teknik Doğrulama</div>
   <div class="page-title">Platform, Build ve QC Kontrolü</div>
   <div class="page-lead">Yorumlama öncesi teknik güvenilirlik kontrolü. Platform ve build uyumsuzluğu tüm değerlendirmeyi geçersiz kılar.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Teknik Doğrulama</div>
+    <p>Önce raporun teknik olarak yorumlanabilir olduğundan emin olun: platform tipi, genome build, prob yoğunluğu, QC durumu ve laboratuvar akreditasyonu net olmalıdır.</p>
+    <p>Build veya kalite bilgisi belirsizse klinik yorumlamaya geçmeden önce laboratuvardan doğrulama isteyin.</p>
+  </div>
 
   <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Platform</span><div><div class="panel-title">aCGH mi, SNP-array mi?</div></div><span class="panel-chev">▼</span></div>
   <div class="panel-body">
@@ -657,6 +666,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">CNV Triaj</div>
   <div class="page-title">Laboratuvar Sınıfına Göre Ön Eleme</div>
   <div class="page-lead">Rapordaki tüm CNV'leri değerlendirin. Lab sınıfına göre ilk triaj kararı verin.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · CNV Triaj</div>
+    <p>Bu adım, laboratuvarın bildirdiği sınıfı körlemesine kabul etmek yerine hangi CNV'lerin ayrıntılı puanlamaya taşınacağını belirlemek içindir.</p>
+    <p>VUS ve P/LP bulguları bağımsız olarak gözden geçirin; B/LB bulgularda ise teknik istisnalar, ROH/UPD şüphesi ve raporlama bağlamını kontrol edin.</p>
+  </div>
   <div class="panel open"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">Triaj</span><div><div class="panel-title">Lab sınıfına göre karar matrisi</div></div><span class="panel-chev">▼</span></div>
   <div class="panel-body">
     <table class="tbl"><thead><tr><th>Lab Sınıfı</th><th>Önerilen İşlem</th><th>İstisna</th></tr></thead>
@@ -675,6 +689,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 1 · Puanlama</div>
   <div class="page-title">Protein-Kodlayan Gen İçeriği</div>
   <div class="page-lead">CNV bölgesi protein-kodlayan gen veya bilinen fonksiyonel element içeriyor mu? Bu karar hem delesyon hem duplikasyon için geçerlidir.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 1</div>
+    <p>CNV'nin protein-kodlayan gen, fonksiyonel element veya intragenik kırılım içerip içermediğini belirleyin. Bu bölüm genellikle puan vermez; sonraki bölümde hangi yolun kullanılacağını netleştirir.</p>
+    <p>Gen yoksa benign yönde kanıt oluşabilir; intragenik CNV varsa ilgili Section 2 intragenik kriterlerine geçin.</p>
+  </div>
   <div class="tool-list">
     <div class="tool-row"><div class="tool-name">UCSC Genome Browser</div><div class="tool-desc">Koordinat gir → RefSeq Genes track → bölgedeki genleri listele</div><div class="tool-link"><a href="https://genome.ucsc.edu" target="_blank">Aç ↗</a></div></div>
     <div class="tool-row"><div class="tool-name">Ensembl</div><div class="tool-desc">Gen, transkript ve Ensembl ID listesi</div><div class="tool-link"><a href="https://ensembl.org" target="_blank">Aç ↗</a></div></div>
@@ -697,6 +716,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 2 · Puanlama</div>
   <div class="page-title">Bilinen HI/TS ve Benign Bölgelerle Overlap</div>
   <div class="page-lead">En ağırlıklı adım. Tek kriter +1.00 veya −1.00 vererek sınıfı doğrudan belirleyebilir.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 2</div>
+    <p>CNV tipini önce DEL veya DUP olarak ayırın; sonra ClinGen dosage, bilinen benign bölgeler ve intragenik kırılım mantığını birlikte değerlendirin.</p>
+    <p>Bu bölüm tek başına sınıfı belirleyebilecek kadar güçlü olabilir; bu nedenle overlap sınırlarını, genin tamamının etkilenip etkilenmediğini ve HI/TS kanıt düzeyini dikkatle doğrulayın.</p>
+  </div>
   <div class="tool-list">
     <div class="tool-row"><div class="tool-name">ClinGen Dosage Map</div><div class="tool-desc">Gen/bölge bazında HI (0–3) ve TS (0–3) skorları</div><div class="tool-link"><a href="https://dosage.clinicalgenome.org" target="_blank">Aç ↗</a></div></div>
     <div class="tool-row"><div class="tool-name">GenCC</div><div class="tool-desc">Gen-hastalık validite konsensüs düzeyi</div><div class="tool-link"><a href="https://thegencc.org" target="_blank">Aç ↗</a></div></div>
@@ -755,6 +779,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 3 · Puanlama</div>
   <div class="page-title">Gen Sayısı Değerlendirmesi</div>
   <div class="page-lead">Section 2'de bilinen HI/TS overlap saptanmadıysa devreye girer. Büyük CNV'lerde gen sayısı tek başına patojenite lehine kanıt olabilir.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 3</div>
+    <p>Section 2 ile güçlü bir dosage veya benign overlap kanıtı bulunamadığında gen sayısı destekleyici bilgi sağlar.</p>
+    <p>Delesyon ve duplikasyon eşikleri farklıdır; yalnızca protein-kodlayan gen sayısını kullanın ve gen listesi/build uyumunu kontrol edin.</p>
+  </div>
   <div class="score-box">
     <div class="score-hdr"><span class="score-label">Section 3 — Gen sayısı</span><span class="score-pts zero" id="s3pts">0.00</span></div>
     <div class="choice-opts">
@@ -776,6 +805,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 4 · Puanlama</div>
   <div class="page-title">Literatür, Veritabanı ve Popülasyon Kanıtı</div>
   <div class="page-lead">Birden fazla kanıt türü bağımsız toplanır. Her alt bölümün ayrı tavanı vardır.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 4</div>
+    <p>Literatür, DECIPHER/ClinVar kayıtları, segregasyon, case-control ve popülasyon verilerini birbirinden bağımsız kanıt kategorileri olarak değerlendirin.</p>
+    <p>Vaka sayısı, fenotip özgüllüğü ve de novo teyit düzeyi puanı etkiler; aynı kanıtı iki kez saymamaya ve bölüm tavanlarını aşmamaya dikkat edin.</p>
+  </div>
   <div class="tool-list">
     <div class="tool-row"><div class="tool-name">DECIPHER Patients</div><div class="tool-desc">Benzer CNV'li hasta kayıtları, de novo/HPO filtresi</div><div class="tool-link"><a href="https://www.deciphergenomics.org/search/patients" target="_blank">Aç ↗</a></div></div>
     <div class="tool-row"><div class="tool-name">ClinVar</div><div class="tool-desc">Önceki CNV sınıflandırmaları</div><div class="tool-link"><a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">Aç ↗</a></div></div>
@@ -842,6 +876,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="eyebrow">Section 5 · Puanlama</div>
   <div class="page-title">Hastanın Kalıtım Bilgisi</div>
   <div class="page-lead">Bu section klinisyen tarafından doldurulur. Ebeveyn testi yapılmadan de novo varsayılamaz.</div>
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Section 5</div>
+    <p>Bu bölüm, incelenen birey için kalıtım bilgisini ve aile öyküsünü sınıflamaya ekler. Ebeveyn testi yoksa de novo kabul etmeyin.</p>
+    <p>Fenotip özgüllüğü, etkilenmiş/etkilenmemiş aile bireyleri ve segregasyon bilgisi birlikte yorumlanmalıdır.</p>
+  </div>
   <div class="score-box">
     <div class="score-hdr"><span class="score-label">Section 5 — Kalıtım durumu</span><span class="score-pts zero" id="s5pts">0.00</span></div>
     <div class="choice-opts">
@@ -1014,6 +1053,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 
 <!-- ═══════════ SONUÇ EKRANI ═══════════ -->
 <div class="result-screen" id="resultScreen">
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Sonuç ve Rapor</div>
+    <p>Toplam skor sınıflama kategorisini verir; hasta özelindeki klinik anlamlılık ayrıca fenotip, kalıtım, teknik kalite ve uzman değerlendirmesi ile yorumlanmalıdır.</p>
+    <p>Rapor kartını klinik rapor yerine geçecek bir belge olarak değil, eğitim ve yapılandırılmış değerlendirme özeti olarak kullanın.</p>
+  </div>
 
   <div class="result-summary">
     <div class="eyebrow">Değerlendirme Sonucu</div>
