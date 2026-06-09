@@ -964,10 +964,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
       <div class="choice-opt" onclick="pick('s5','5E_k',-0.15,'5E: Etkilenmemiş üyede varyant var, nonspesifik. −0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>5E</strong> — Non-segregasyon: etkilenmemiş üyede varyant bulundu, nonspesifik (4K referans)</div><div class="co-pts neg">−0.15</div></div>
       <div class="choice-opt" onclick="pick('s5','5F',0,'5F: Kalıtım bilgisi yok.',this)"><div class="co-radio"></div><div class="co-text"><strong>5F</strong> — Kalıtım bilgisi yok / bilgilendirici değil</div><div class="co-pts zero">0</div></div>
       <div class="choice-opt" onclick="pick('s5','5G',0.10,'5G: Kalıtım bilgisi yok; fenotip nonspesifik ama benzer vakalarla tutarlı. +0.10',this)"><div class="co-radio"></div><div class="co-text"><strong>5G</strong> — Kalıtım bilgisi yok; fenotip nonspesifik ama benzer vakalarla tutarlı (0–0.15)</div><div class="co-pts pos">+0.10</div></div>
-      <div class="choice-opt" onclick="pick('s5','5H',0.30,'5H: Kalıtım bilinmiyor, fenotip çok uyumlu. +0.30 (DEL); DUP için +0.15',this)"><div class="co-radio"></div><div class="co-text"><strong>5H</strong> — Kalıtım bilinmiyor; fenotip yüksek özgül ve uyumlu</div><div class="co-pts pos">+0.30</div></div>
+      <div class="choice-opt" onclick="pick('s5','5H',0.30,'5H: Kalıtım bilinmiyor, fenotip çok uyumlu. Loss için önerilen +0.30; gain için ClinGen önerisi +0.15 olup manuel audit gerektirir.',this)"><div class="co-radio"></div><div class="co-text"><strong>5H</strong> — Kalıtım bilinmiyor; fenotip yüksek özgül ve uyumlu. Loss için önerilen +0.30; gain için önerilen +0.15 olduğundan gain olgularında manuel audit notu ekleyin.</div><div class="co-pts pos">+0.30</div></div>
     </div>
   </div>
   <div class="feedback-box" id="s5-fb"></div>
+  <div class="note note-amber"><span class="note-icon">!</span><span>5H ortak seçenek olarak gösterilir. Loss olgularında önerilen değer +0.30; gain olgularında ClinGen önerisi +0.15, aralık 0–0.30'dur. Gain olgusunda 5H seçilirse toplam puanı manuel audit edin ve gerekçeyi rapor notuna yazın.</span></div>
   <div class="note note-red"><span class="note-icon">!</span><span>Ebeveyn testi yapılmadan de novo varsayılamaz. Ebeveyn mevcut ve test edilmemişse, önce ebeveyn çalışması isteyin.</span></div>
   <div class="step-nav"><span class="step-ctr">5 / 5</span><div class="nav-btns"><button class="btn" onclick="goTo(5)">← Section 4</button><button class="btn-primary btn" onclick="showResult()">Sonuç ve Rapor →</button></div></div>
 </div>
@@ -1417,6 +1418,7 @@ function parseReportText(){
   if(setFieldIfSafe("ptCopyState",parsed.copyState,"Kopya Sayısı Durumu"))changed.push("kopya durumu");
   if(setFieldIfSafe("ptISCN",parsed.iscn,"ISCN Notasyonu"))changed.push("ISCN");
   if(setFieldIfSafe("ptTestType",parsed.testType,"Test Tipi"))changed.push("test tipi");
+  var metricMsg=syncMetricTypeFromParsedType(parsed.type);
 
   var msg;
   if(parsed.coord||parsed.type||parsed.build){
@@ -1425,8 +1427,19 @@ function parseReportText(){
     msg="Rapor metni otomatik ayrıştırılamadı; lütfen CNV tipi, build ve koordinatları manuel kontrol edin.";
   }
   if(changed.length)msg+=" Doldurulan alanlar: "+changed.join(", ")+".";
+  if(metricMsg)msg+=" "+metricMsg;
   if(sum)sum.textContent=msg;
   generateFranklinOutput();
+}
+function syncMetricTypeFromParsedType(type){
+  if(type!=="del"&&type!=="dup")return"";
+  var opts=document.querySelectorAll("#cnvTypeOpts .choice-opt");
+  var el=type==="del"?opts[0]:opts[1];
+  if(el&&typeof setCNVType==="function"){
+    setCNVType(type,el);
+    return "CNV tipi bilgi kartına işlendi ve Section 2 "+(type==="del"?"delesyon/loss":"duplikasyon/gain")+" metriği görünür hale getirildi. Herhangi bir Section 2 kriter puanı otomatik seçilmedi.";
+  }
+  return "CNV tipi bilgi kartına işlendi. Section 2'de uygun delesyon/loss veya duplikasyon/gain metriğini ayrıca kontrol edin.";
 }
 function inferTypePrefix(){
   var t=gv("ptCnvType"),cs=gv("ptCopyState");
@@ -1564,8 +1577,11 @@ function updateS4a(){
   if(fbe){
     fbe.classList.add("vis");
     if(s4aKey==="4none")fbe.textContent="Vaka kan\u0131t\u0131 bulunamad\u0131.";
-    else if(s4aKey==="4D")fbe.textContent="4D: Fenotip tutars\u0131z. "+tot.toFixed(2);
-    else fbe.textContent=s4aKey+": "+cnt+" vaka \u00d7 "+s4aPPCase.toFixed(2)+" = "+tot.toFixed(2)+" (max 0.45)";
+    else if(s4aKey==="4D")fbe.textContent="4D: Fenotip tutars\u0131z. "+tot.toFixed(2)+" (aralık 0 ile -0.30)";
+    else{
+      var maxTxt=s4aKey==="4E"?"0.30":"0.90";
+      fbe.textContent=s4aKey+": "+cnt+" vaka \u00d7 "+s4aPPCase.toFixed(2)+" = "+tot.toFixed(2)+" (toplam max "+maxTxt+")";
+    }
   }
   updBadge();
 }
