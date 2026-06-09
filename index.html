@@ -562,27 +562,39 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="page-lead">Değerlendirmeye başlamadan önce hasta ve CNV bilgilerini girin. Bu bilgiler tüm adımlar boyunca korunacak ve nihai rapor kartında otomatik kullanılacaktır.</div>
 
   <!-- Hasta Fotoğrafı -->
-  <div class="form-sec">Ek Fenotip Görseli — Onamlı / Lokal Kullanım</div>
+  <div class="form-sec">Ek Fenotip / Rapor Görselleri — Lokal Referans / OCR Yok</div>
   <div class="form-group full">
     <label class="form-lbl">Ek Fenotip Görselleri — Onamlı / Lokal Kullanım</label>
     <div class="photo-upload-area" id="photoUploadArea">
       <input type="file" id="ptPhoto" accept="image/*" multiple onchange="handlePhoto(this)">
       <div class="photo-placeholder" id="photoPlaceholder">
         <div style="font-size:24px;margin-bottom:8px;color:var(--txt4);font-weight:300;font-family:'JetBrains Mono',monospace">[+]</div>
-        <div style="font-weight:600;font-size:13.5px;color:var(--txt2)">Fenotip Görselleri Ekle</div>
+        <div style="font-weight:600;font-size:13.5px;color:var(--txt2)">Fenotip / Rapor Görseli Ekle</div>
         <div style="font-size:12px;margin-top:4px;color:var(--txt3)">Birden fazla JPG/PNG seçilebilir</div>
       </div>
     </div>
     <div class="thumb-grid" id="photoPreviewGrid"></div>
+    <div class="parse-summary" id="photoOcrStatus"></div>
     <div class="note note-teal" style="margin-top:10px">
       <span class="note-icon">i</span>
-      <span>Birden fazla görsel eklenebilir. Görseller yalnızca tarayıcı oturumunda önizlenir; sunucuya gönderilmez ve yerel depolamaya yazılmaz. Kurumsal onam ve veri güvenliği sorumluluğu kullanıcıya aittir.</span>
+      <span>Görseller yalnızca lokal önizleme ve klinik karşılaştırma amacıyla eklenir. Bu alan görsel referans içindir; otomatik veri çıkarımı yapılmaz. Bu sürüm görselden/OCR ile otomatik metin çıkarımı yapmaz. Otomatik alan doldurma için SNP-array/CNV rapor metnini aşağıdaki "Hasta Rapor Sonucu / Array Çıktısı" alanına yapıştırın.</span>
+    </div>
+    <div class="note note-blue" style="margin-top:10px">
+      <span class="note-icon">i</span>
+      <span>Görseller yalnızca tarayıcı oturumunda önizlenir; sunucuya gönderilmez ve yerel depolamaya yazılmaz. OCR ile görselden otomatik metin çıkarımı gelecekte ayrı bir özellik olarak değerlendirilecektir. Kurumsal onam ve veri güvenliği sorumluluğu kullanıcıya aittir.</span>
     </div>
   </div>
 
   <div class="form-sec">Hasta Rapor Sonucu / Array Çıktısı</div>
   <div class="form-grid">
-    <div class="form-group full"><label class="form-lbl">Yapıştırılan rapor sonucu</label><textarea class="form-inp" id="ptReportText" placeholder="Örn. arr[GRCh38] 7q11.23(72846244_74187855)x1 veya DEL:Chr7:72846244-74187855"></textarea></div>
+    <div class="form-group full">
+      <label class="form-lbl">Yapıştırılan rapor sonucu</label>
+      <div class="note note-blue" style="margin-bottom:10px">
+        <span class="note-icon">i</span>
+        <span>Buraya rapordaki metin sonucu yapıştırın. Örneğin arr[GRCh38] 7q11.23(72846244_74187855)x1 veya DEL:Chr7:72846244-74187855. Ardından "Rapor metninden alanları doldur" butonuna basın.</span>
+      </div>
+      <textarea class="form-inp" id="ptReportText" placeholder="Örn. arr[GRCh38] 7q11.23(72846244_74187855)x1 veya DEL:Chr7:72846244-74187855"></textarea>
+    </div>
     <div class="form-group full"><label class="form-lbl">Kısa not (isteğe bağlı)</label><input class="form-inp" id="ptReportNote" placeholder="Örn. Kullanıcı tarafından manuel doğrulama bekliyor"></div>
     <div class="form-group full">
       <div class="nav-btns" style="flex-wrap:wrap">
@@ -1331,6 +1343,8 @@ function renderPhotoPreviews(){
   });
   if(ph)ph.style.display=photoItems.length?"none":"block";
   if(area)area.style.borderStyle=photoItems.length?"solid":"dashed";
+  var ocrStatus=document.getElementById("photoOcrStatus");
+  if(ocrStatus)ocrStatus.textContent=photoItems.length?"Görseller yüklendi; otomatik OCR/metin çıkarımı yapılmadı.":"";
 }
 function removePhoto(idx){
   photoItems.splice(idx,1);
@@ -1372,7 +1386,7 @@ function parseReportText(){
   var txt=gv("ptReportText");
   var sum=document.getElementById("parseSummary");
   if(!txt.trim()){
-    if(sum)sum.textContent="Rapor metni boş. Lütfen önce array/CNV sonucunu yapıştırın.";
+    if(sum)sum.textContent="Rapor metni alanı boş. Görsel yüklemek otomatik ayrıştırma başlatmaz. Lütfen rapordaki metni bu alana yapıştırın.";
     return;
   }
   var parsed={}, clean=txt.replace(/,/g,"");
@@ -1420,12 +1434,17 @@ function parseReportText(){
   if(setFieldIfSafe("ptTestType",parsed.testType,"Test Tipi"))changed.push("test tipi");
   var metricMsg=syncMetricTypeFromParsedType(parsed.type);
 
+  var highConfidence=!!(parsed.coord&&parsed.type&&parsed.build);
+  var partial=!!(parsed.coord||parsed.type||parsed.build||parsed.cytoband||parsed.copy);
   var msg;
-  if(parsed.coord||parsed.type||parsed.build){
-    msg="Ayrıştırma özeti: CNV tipi="+(parsed.type||"belirsiz")+", build="+(parsed.build||"belirsiz")+", kromozom="+(parsed.chr||"belirsiz")+", start="+(parsed.start||"belirsiz")+", end="+(parsed.end||"belirsiz")+", cytoband="+(parsed.cytoband||"belirsiz")+", kopya="+(parsed.copy||"belirsiz")+". Manuel doğrulama gereklidir.";
+  if(highConfidence){
+    msg="Rapor metninden yüksek güvenli alanlar çıkarıldı. Lütfen build, CNV tipi ve koordinatları manuel doğrulayın.";
+  }else if(partial){
+    msg="Bazı alanlar çıkarıldı, ancak eksik veya belirsiz bilgi var. CNV tipi, build ve koordinatları manuel kontrol edin.";
   }else{
-    msg="Rapor metni otomatik ayrıştırılamadı; lütfen CNV tipi, build ve koordinatları manuel kontrol edin.";
+    msg="Rapor metni otomatik ayrıştırılamadı. Görsel yüklenmişse bu sürüm OCR yapmaz; lütfen rapordaki metni kopyalayıp bu alana yapıştırın.";
   }
+  if(partial)msg+=" Ayrıştırma özeti: CNV tipi="+(parsed.type||"belirsiz")+", build="+(parsed.build||"belirsiz")+", kromozom="+(parsed.chr||"belirsiz")+", start="+(parsed.start||"belirsiz")+", end="+(parsed.end||"belirsiz")+", cytoband="+(parsed.cytoband||"belirsiz")+", kopya="+(parsed.copy||"belirsiz")+".";
   if(changed.length)msg+=" Doldurulan alanlar: "+changed.join(", ")+".";
   if(metricMsg)msg+=" "+metricMsg;
   if(sum)sum.textContent=msg;
@@ -1471,7 +1490,10 @@ function generateFranklinOutput(){
     }
   }
   out.value=helper;
-  if(status)status.textContent=build?"Franklin'e yapıştırmadan önce koordinat/build bilgisini manuel doğrulayın.":"Genome build eksik; Franklin çıktısını kullanmadan önce build bilgisini doğrulayın.";
+  if(status){
+    if(prefix==="CNV"||!build||!coord)status.textContent="Franklin yardımcı formatı için CNV tipi, build ve koordinat bilgisi gereklidir.";
+    else status.textContent="Franklin'e yapıştırmadan önce CNV tipi, koordinat ve build bilgisini manuel doğrulayın.";
+  }
   return helper;
 }
 function copyFranklinOutput(){
