@@ -702,6 +702,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
       <tr><td>GRCh38 / hg38</td><td>Varsayılan</td><td>Doğrudan yapıştırın</td></tr>
     </tbody></table>
     <div class="note note-amber"><span class="note-icon">!</span><span>Build belirtilmemiş raporlarda yorumlama başlatmayın. GRCh37 ile GRCh38 arasında koordinat farkı megabaz düzeyine ulaşabilir.</span></div>
+    <div class="tool-list" style="margin-top:12px">
+      <div class="tool-row"><div class="tool-name">GeneBe Liftover / Tools</div><div class="tool-desc">hg19 ↔ hg38 koordinat dönüşümü için yardımcı araç</div><div class="tool-link"><a href="https://genebe.net/tools" target="_blank" rel="noopener">Aç ↗</a></div></div>
+    </div>
+    <div class="note note-blue"><span class="note-icon">i</span><span>Genome build farklılığı varsa koordinat dönüşümü için GeneBe Liftover veya UCSC LiftOver gibi araçlar kullanılabilir. Ancak liftover sonucu klinik doğrulama yerine geçmez; dönüştürülen koordinatlar genome build, gen/region overlap ve breakpoint belirsizliği açısından manuel kontrol edilmelidir.</span></div>
+    <div class="note note-amber"><span class="note-icon">!</span><span>GeneBe araçları eğitim/araştırma amaçlı yardımcı araç olarak kullanılmalıdır; klinik/diagnostik kararın tek kaynağı olarak kullanılmamalıdır.</span></div>
   </div></div>
 
   <div class="panel"><div class="panel-head" onclick="tPanel(this)"><span class="panel-tag sm-tag tag-gray">QC</span><div><div class="panel-title">Kalite Kontrol ve Akreditasyon</div></div><span class="panel-chev">▼</span></div>
