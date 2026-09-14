@@ -19,11 +19,12 @@ Güncel durum için [scoring-audit.md](scoring-audit.md).
 - [x] Ağ çağrısı bulunmaması
 - [x] Otomatik kaydetmenin varsayılan kapalı olması
 
-## Aşama 2 — Bağımsız araç karşılaştırması (YAPILMADI — öncelikli)
+## Aşama 2 — Bağımsız araç karşılaştırması (KISMEN TAMAMLANDI — 2026-09-14)
 
-- [ ] `tests/unit/08-scenarios.test.js` içindeki 11 senaryoyu **ClinGen CNV Calculator**'a elle girip sonuçları karşılaştırın
-- [ ] Her sapmayı `scoring-audit.md`'ye kaydedin; sapmanın aritmetikten mi kriter seçiminden mi kaynaklandığını ayırın
-- [ ] Aynı senaryoları Franklin ile karşılaştırın (ikincil referans)
+- [x] `tests/unit/08-scenarios.test.js` içindeki 11 senaryodan **8'ini** ClinGen CNV Calculator'a elle girip sonuçları karşılaştırdık — **16/16 alt-değerlendirme sıfır sapmayla eşleşti.** Ayrıntı ve tam tablo: [scoring-audit.md](scoring-audit.md).
+- [ ] Kalan 3 senaryoyu (7, 8, tam 4) tamamlayın — bunlar olgu-sayısı çarpanı ve çoklu kriter kombinasyonu içerdiği için hesaplayıcının arayüzünde daha fazla adım gerektiriyor.
+- [ ] Her yeni sapma bulunduğunda `scoring-audit.md`'ye kaydedin; sapmanın aritmetikten mi kriter seçiminden mi kaynaklandığını ayırın.
+- [ ] Aynı senaryoları Franklin ile karşılaştırın (ikincil referans) — henüz yapılmadı.
 - [ ] En az 10 ek sentetik olgu ekleyin: 3 kayıp, 3 kazanım, 2 sınıf sınırı, 1 ROH, 1 mozaik
 
 ## Aşama 3 — Kaynak ve içerik doğrulaması (YAPILMADI)
