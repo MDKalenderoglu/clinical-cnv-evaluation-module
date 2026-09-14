@@ -32,8 +32,8 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 | Gizlilik sözleşmesi (ağ çağrısı yok) | — | tüm kaynak | ✅ `07` — `fetch`/XHR/beacon/WebSocket taraması | Yok |
 | Otomatik kaydetmenin varsayılan kapalılığı | — | `cnv-case.js` | ✅ `07` | Yok |
 | **ClinGen CNV Calculator karşılaştırması** | Riggs 2020 resmî uygulayıcı | — | ✅ 8/11 senaryo canlı doğrulandı, 0 sapma | Kalan 3 senaryo (7, 8, kısmen 4) bekliyor — bkz. altta |
-| Uncoupling ilkesi (sınıf ≠ hasta tanısı) | Riggs 2020; ACGS 2023 | Arayüz metinleri, çıktı uyarıları | ❌ Metin incelemesi | Bekliyor |
-| Raporlama dili uygunluğu | ACGS 2023 | Çıktı metinleri | ❌ Metin incelemesi | Bekliyor |
+| Uncoupling ilkesi (sınıf ≠ hasta tanısı) | Riggs 2020; ACGS 2023 | Arayüz metinleri, çıktı uyarıları | ✅ `07` — metin incelemesi + regresyon testi, 1 gerçek eksik bulunup düzeltildi | Uzman (klinik genetikçi) incelemesi hâlâ öneriliyor |
+| Raporlama dili uygunluğu | ACGS 2023 | Çıktı metinleri | ✅ `07` — sınıflandırma/rapor metinleri, senaryo şablonları incelendi | Uzman incelemesi hâlâ öneriliyor |
 | Yazdırma / PDF çıktısı | — | `dlHTML()`, `window.print()` | ✅ `07` — gerçek bir sızıntı bulundu ve düzeltildi | Chrome'da doğrulandı; Safari/Firefox bekliyor — bkz. altta |
 | Dış kaynak URL şemaları | 18 sağlayıcı | `buildLinks()` | ✅ 18/18 canlı doğrulandı, 2 kırık link bulunup düzeltildi | Periyodik yeniden kontrol öneriliyor — bkz. altta |
 
@@ -120,10 +120,26 @@ Sonuçlar `tests/unit/10-link-verification.test.js` içinde donduruldu (bu test 
 
 **Doğrulanmayan:** Yalnızca Chromium tabanlı tarayıcıda test edildi (bu oturumun araç kısıtı). Safari ve Firefox'ta sayfa-sonu (page-break) davranışı ve `color-mix()` gibi CSS Color 5 özelliklerinin (kanıt toplama adımındaki `.gate-*` kutularında kullanılıyor, ekran görünümü için — print çıktısını etkilemiyor) daha eski tarayıcı sürümlerinde zarif bozulup bozulmadığı doğrulanmadı.
 
+## ACGS 2023 / raporlama dili ve uncoupling ilkesi — bulgu ve düzeltme
+
+**Tarih:** 2026-09-14 · **Yöntem:** Uygulamadaki tüm klinik yorum metinleri (sınıf açıklamaları, sonraki adım önerileri, eğitim açıklamaları, triaj/korelasyon/raporlama adımları, rapor kartı sınırlılık metni, kavram rehberi) ACGS 2023 Best Practice Guidelines ve Riggs 2020'nin raporlama/uncoupling ilkeleri açısından tek tek okundu.
+
+**Genel değerlendirme — mevcut metinler zaten büyük ölçüde uyumlu:**
+- VUS hiçbir yerde tanısal veya negatif gibi sunulmuyor; her sınıf açıklaması "negatif veya patojenik gibi yorumlanmamalı" gibi açık hedge içeriyor.
+- Uncoupling ilkesi (varyant sınıfı ≠ hastaya özgü nedensellik) hem CNV Triaj adımında ("ACMG Uncoupled İlkesi" notu) hem Klinik Korelasyon adımında ("Varyant sınıflaması hasta bağımsız yapıldı. Şimdi 'bu CNV bu hastayı açıklıyor mu?' sorusunu ayrıca yanıtlayın") hem de Kavram Rehberi'nde açıkça anlatılıyor.
+- P/LP insidental bulgu (fenotip uyumsuz) durumu doğru ele alınıyor: "raporlanır, sınıf değişmez" — sınıflandırma hastaya göre değiştirilmiyor.
+- Rapor şablonları (Senaryo 1-3) uygun şekilde hedge edilmiş, skor şeffaflığı içeriyor, VUS için somut sonraki adım öneriyor.
+
+**Gerçek bir eksik bulundu ve düzeltildi:** Uygulamanın **kendisi** (yalnızca `README.md`, ki bu GitHub Pages'te hiç sunulmuyor) hiçbir yerde "bu bir tıbbi cihaz değildir / valide edilmemiş bir klinik karar sistemidir" ifadesini taşımıyordu. Dağıtılan uygulamayı doğrudan açan bir klinisyen bu uyarıyı hiç görmeden veri girmeye başlayabilirdi — yalnızca rapor kartının en altındaki sınırlılık metni (iş akışının sonunda) bu bilgiyi taşıyordu. Olgu Kartı'nın en başına, veri girişinden önce, göze çarpan (kırmızı) bir uyarı eklendi.
+
+**Küçük terminolojik not (düzeltme gerektirmedi):** Benign/olası benign açıklamalarında "≥%99 benign güveni" ifadesi Riggs 2020'nin Bayesian posterior olasılık çerçevesiyle tutarlı, ACGS ile çelişmiyor.
+
+Sonuçlar `tests/unit/07-html-consistency.test.js` içindeki "ACGS 2023 / uncoupling ilkesi" bloğunda donduruldu.
+
 ## Bilinen eksikler (öncelik sırasıyla)
 
-1. Yazdırma/PDF çıktısının Safari ve Firefox'ta doğrulanması (Chrome'da doğrulandı ve bir sızıntı düzeltildi).
-2. Arayüz metinlerinin ACGS 2023 raporlama diline uygunluğu uzman incelemesi beklemektedir.
+1. ACGS 2023 metin incelemesi bir kişi (bu oturum) tarafından yapıldı — bağımsız bir klinik genetik uzmanının incelemesi hâlâ öneriliyor (otomasyon bunun yerini tutmaz).
+2. Yazdırma/PDF çıktısının Safari ve Firefox'ta doğrulanması (Chrome'da doğrulandı ve bir sızıntı düzeltildi).
 3. ClinGen CNV Calculator karşılaştırmasında kalan 3 senaryo (7, 8, tam 4) — yukarıda not edildi.
 4. 11p15.5 ve 20q13.32 için ClinGen'de resmî "recurrent region" kürasyonu yok — yukarıda not edildi, mevcut yaklaşık sınırlar korundu.
 5. UCSC ve OMIM linkleri bot koruması nedeniyle otomatik olarak doğrudan doğrulanamadı — periyodik elle kontrol önerilir.

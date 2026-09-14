@@ -33,8 +33,8 @@ Güncel durum için [scoring-audit.md](scoring-audit.md).
 - [x] `SPECIAL_REGIONS` koordinatlarını ClinGen Dosage Map ile doğrulayın — **15 bölge × 2 build tamamlandı, 8 gerçek sapma düzeltildi** (biri kritik: 22q11.2 distal hiç örtüşmüyordu). Ayrıntı: [scoring-audit.md](scoring-audit.md). DECIPHER ile ikinci kaynak karşılaştırması henüz yapılmadı.
 - [x] Dış kaynak URL'lerinin her birini tarayıcıda açıp doğru bölgeye gittiğini teyit edin — **18/18 link canlı test edildi, 2 kırık link bulunup düzeltildi** (ClinGen Dosage Map, Orphanet). Ayrıntı: [scoring-audit.md](scoring-audit.md). UCSC ve OMIM bot koruması nedeniyle doğrudan doğrulanamadı.
 - [ ] Sınırlılık metnini laboratuvar kalite sistemiyle uyumlu hâle getirin
-- [ ] Arayüz metinlerini ACGS 2023 raporlama dili açısından inceleyin
-- [ ] Uncoupling ilkesinin (sınıf ≠ hasta tanısı) her çıktıda korunduğunu doğrulayın
+- [x] Arayüz metinlerini ACGS 2023 raporlama dili açısından inceleyin — **tüm klinik yorum metinleri incelendi, genel olarak uyumlu bulundu.** 1 gerçek eksik bulundu ve düzeltildi: uygulamanın kendisinde (yalnızca README'de değil) "tıbbi cihaz değildir" uyarısı yoktu, ilk ekrana eklendi. Ayrıntı: [scoring-audit.md](scoring-audit.md). Bağımsız klinik genetik uzmanı incelemesi hâlâ öneriliyor.
+- [x] Uncoupling ilkesinin (sınıf ≠ hasta tanısı) her çıktıda korunduğunu doğrulayın — **doğrulandı:** Triaj, Klinik Korelasyon ve Kavram Rehberi adımlarının üçünde de açıkça anlatılıyor; P/LP insidental bulgu durumu doğru ele alınıyor (sınıf değişmiyor).
 
 ## Aşama 4 — Kullanım doğrulaması (YAPILMADI)
 

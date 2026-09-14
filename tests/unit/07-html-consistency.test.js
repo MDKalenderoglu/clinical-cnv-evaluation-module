@@ -132,4 +132,39 @@ module.exports = function (suite) {
     t.ok(/function save\(data\)\s*\{\s*if \(!autosaveEnabled\(\)\) return false;/.test(caseSrc),
       "kaydetme, anahtar kapalıyken hiçbir şey yazmaz");
   });
+
+  suite("ACGS 2023 / uncoupling ilkesi — arayüz metni incelemesi (2026-09-14)", function (t) {
+    /* ACGS 2023 Best Practice Guidelines, aracın kendisinin bir tıbbi
+       cihaz olmadığını ve valide edilmediğini AÇIKÇA belirtmesini
+       gerektirir. Bulgu: bu uyarı yalnızca README.md'de vardı — README
+       GitHub Pages'te sunulmaz, dolayısıyla dağıtılan uygulamayı
+       doğrudan açan bir klinisyen bunu HİÇ görmüyordu. Düzeltildi:
+       ilk ekranda (Olgu Kartı) açık bir uyarı eklendi. */
+    t.ok(html.indexOf("Bu bir tıbbi cihaz değildir") > 0,
+      "uygulamanın ilk ekranında (README'de değil, index.html'in kendisinde) tıbbi cihaz olmadığı açıkça belirtilir");
+    t.ok(html.indexOf("Bu bir tıbbi cihaz değildir") < html.indexOf('id="stepN1"') + 2000,
+      "uyarı ilk adımın en başında, kullanıcı veri girmeden önce görünür");
+
+    /* Uncoupling ilkesi: varyant sınıfı hastaya özgü nedensellikten ayrı */
+    t.ok(html.indexOf("Uncoupled") > 0 || html.indexOf("uncoupled") > 0,
+      "Uncoupling ilkesi (sınıf ≠ hasta tanısı) arayüzde adıyla açıklanıyor");
+    t.ok(html.indexOf('bu CNV bu hastayı açıklıyor mu') > 0,
+      "Klinik Korelasyon adımı, sınıflandırmayı hastaya özgü açıklayıcılık sorusundan ayrı bir adım olarak ele alır");
+
+    /* VUS asla tanısal/negatif gibi sunulmamalı */
+    t.ok(html.indexOf("Negatif veya patojenik gibi yorumlanmamal") > 0,
+      "VUS açıklama metni, VUS'un negatif veya patojenik olarak yorumlanmaması gerektiğini açıkça belirtir");
+
+    /* Rapor kartının kendi içinde de sınırlılık/uyarı metni olmalı (raporun
+       fiziksel olarak yazdırılıp dolaşması durumunda ilk uyarıdan bağımsız
+       olarak da uyarı taşımalı) */
+    t.ok(html.indexOf("Klinik raporun veya uzman değerlendirmesinin yerini almaz") > 0,
+      "rapor kartının kendisi de (yalnızca ilk ekran değil) sınırlılık metni taşır");
+    t.ok(html.indexOf("Yerel validasyon ve kalite kontrol tamamlanmadan") > 0,
+      "rapor kartı yerel doğrulama gerekliliğini belirtir");
+
+    /* B/LB sınıfları asla "sağlıklı" veya "normal" gibi kesin dille sunulmamalı */
+    t.ok(!/\bsağlıklıdır\b|\bnormaldir\b/i.test(html),
+      "B/LB sonuçları kesin \"sağlıklıdır/normaldir\" dili ile sunulmuyor (ACGS: benign bulgu, hastalık yokluğu kanıtı değildir)");
+  });
 };
