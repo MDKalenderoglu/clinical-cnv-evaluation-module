@@ -27,10 +27,10 @@ Güncel durum için [scoring-audit.md](scoring-audit.md).
 - [ ] Aynı senaryoları Franklin ile karşılaştırın (ikincil referans) — henüz yapılmadı.
 - [ ] En az 10 ek sentetik olgu ekleyin: 3 kayıp, 3 kazanım, 2 sınıf sınırı, 1 ROH, 1 mozaik
 
-## Aşama 3 — Kaynak ve içerik doğrulaması (YAPILMADI)
+## Aşama 3 — Kaynak ve içerik doğrulaması (KISMEN TAMAMLANDI — 2026-09-14)
 
 - [ ] Her kriter metnini Riggs 2020 Table 1–2 ve Supplemental Material 1 ile karşılaştırın
-- [ ] `SPECIAL_REGIONS` koordinatlarını ClinGen Dosage Map ve DECIPHER ile doğrulayın veya bölgeleri koordinatsız uyarıya çevirin
+- [x] `SPECIAL_REGIONS` koordinatlarını ClinGen Dosage Map ile doğrulayın — **15 bölge × 2 build tamamlandı, 8 gerçek sapma düzeltildi** (biri kritik: 22q11.2 distal hiç örtüşmüyordu). Ayrıntı: [scoring-audit.md](scoring-audit.md). DECIPHER ile ikinci kaynak karşılaştırması henüz yapılmadı.
 - [ ] Dış kaynak URL'lerinin her birini tarayıcıda açıp doğru bölgeye gittiğini teyit edin
 - [ ] Sınırlılık metnini laboratuvar kalite sistemiyle uyumlu hâle getirin
 - [ ] Arayüz metinlerini ACGS 2023 raporlama dili açısından inceleyin

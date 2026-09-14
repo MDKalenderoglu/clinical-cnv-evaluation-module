@@ -25,7 +25,7 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 | Koordinat ayrıştırma | — | `parseCoord()` | ✅ `04-coordinates` — 12 geçerli, 10 geçersiz biçim | Bekliyor |
 | Build → veritabanı eşlemesi | — | `buildLinks()` | ✅ `04` — UCSC hg19/hg38, Ensembl GRCh37, gnomAD r2.1/r4 | **Bekliyor — URL'lerin canlı doğrulanması gerekir** |
 | Karar kapıları | Riggs 2020; ACGS 2023; klinik uygulama | `gates()` | ✅ `05-gates` — build çelişkisi, platform, ROH, mozaiklik, ebeveyn, fenotip | Bekliyor |
-| İmprinted / azalmış penetrans bölgeleri | ClinGen, DECIPHER | `SPECIAL_REGIONS` | ⚠️ Yapı testi var; **koordinatlar yaklaşıktır ve doğrulanmamıştır** | **Bekliyor — öncelikli** |
+| İmprinted / azalmış penetrans bölgeleri | ClinGen Dosage Sensitivity Map | `SPECIAL_REGIONS` | ✅ 15/15 bölge × 2 build canlı doğrulandı, 8 gerçek sapma düzeltildi | Bekliyor — bkz. altta |
 | Sınırlılık metni üretimi | ACGS 2023; laboratuvar uygulaması | `limitationsText()` | ✅ `05` — platform ve ebeveyn durumuna göre koşullu | Bekliyor |
 | Olgu dosyası şeması | — | `cnv-case.js` | ✅ `06-case-file` | Yok |
 | Markdown özet üretimi | — | `toMarkdown()` | ✅ `06` — içerik, kaçış, boş durum | Bekliyor |
@@ -69,12 +69,33 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 
 **Teknik not:** Hesaplayıcı jQuery tabanlı bootstrap-slider bileşenleri kullanıyor; programatik `.click()` çoğu kriterde sonucu güncellemiyor, gerçek fare koordinatı tıklaması gerekiyor (sabit puanlı checkbox'lar — 1B gibi — istisna). Bu, otomasyonun her senaryoda elle koordinat hesaplaması gerektirdiği, dolayısıyla kalan 3 senaryonun ayrı bir oturumda tamamlanabileceği anlamına gelir.
 
+## SPECIAL_REGIONS — ClinGen Dosage Map doğrulaması — sonuçlar
+
+**Tarih:** 2026-09-14 · **Kaynak:** search.clinicalgenome.org/kb/gene-dosage (GRCh37/GRCh38 bölge koordinat sorgusu) · **Yöntem:** `SPECIAL_REGIONS` içindeki 15 bölgenin her biri, her iki build için ClinGen'in kürasyon ettiği resmî "recurrent region" sınırlarıyla karşılaştırıldı. Sonuçlar `tests/unit/09-region-boundaries.test.js` içinde donduruldu (27 sınır doğrulaması + 3 regresyon testi).
+
+**8 gerçek sapma bulundu ve düzeltildi:**
+
+| Bölge | Build | Sorun | Düzeltme |
+| --- | --- | --- | --- |
+| 22q11.2 distal | GRCh37 + GRCh38 | **Kritik:** eski koordinat gerçek "distal type I" bölgesiyle (21.92M-22.96M) hiç örtüşmüyordu — yanlışlıkla "santral" (B-D/C-D) bölgeyle çakışıyordu | Doğru distal koordinata taşındı |
+| 14q32.2 | GRCh37 + GRCh38 | Her iki uçta da ~400 kb dar | Genişletildi |
+| 15q11.2-q13 (PWS/AS) | GRCh37 + GRCh38 | Başlangıçta ~770 kb dar | Genişletildi |
+| 2q13 | GRCh37 + GRCh38 | Proksimal (NPHP1) alt bölge tamamen kaçırılıyordu | İki alt bölgeyi birlikte kapsayacak şekilde genişletildi |
+| 1q21.1 distal | GRCh38 (yalnız) | Son ~500 kb kesiliyordu | Genişletildi |
+| 15q11.2 BP1-BP2 | GRCh38 (yalnız) | Son ~190 kb kesiliyordu | Genişletildi |
+| 6q24 | GRCh37 + GRCh38 | ~15-17 kb'lık küçük uç eksikliği | Genişletildi |
+| 16p12.1 | — (isimlendirme) | ClinGen güncel kürasyonda bu bölgeyi "16p12.2" olarak adlandırıyor | İsim güncellendi, koordinat zaten doğruydu |
+
+**7 bölge zaten doğruydu** (bizim sınırımız ClinGen'in gerçek sınırını güvenli marjla kapsıyordu, değişiklik gerekmedi): 15q13.3, 16p11.2 proksimal, 16p11.2 distal, 16p13.11, 17q12, 1q21.1 distal (GRCh37), 15q11.2 BP1-BP2 (GRCh37).
+
+**2 bölgede ClinGen'de tek bir "recurrent region" kürasyonu yok** (11p15.5, 20q13.32) — bunlar CNV-dozaj değil metilasyon/UPD kaynaklı bozukluklar olduğu için beklenen bir durum; mevcut yaklaşık sınırlar (BWS/SRS gen kümesi, GNAS gen sınırı) korundu ve bu durum not koduna eklendi.
+
 ## Bilinen eksikler (öncelik sırasıyla)
 
-1. **`SPECIAL_REGIONS` koordinatları yaklaşıktır** ve literatürden doğrulanmamıştır. Yalnızca "bu bölgeye bakmayı hatırlat" amacı taşır; sınıflandırmayı etkilemez, yalnızca uyarı üretir. Her uyarı metninde bu belirtilir.
-2. **Dış kaynak URL biçimleri canlı doğrulanmamıştır.** Sağlayıcılar URL şemalarını değiştirebilir; periyodik kontrol gerekir.
-3. Yazdırma/PDF çıktısının farklı tarayıcılarda tutarlılığı test edilmemiştir.
-4. Arayüz metinlerinin ACGS 2023 raporlama diline uygunluğu uzman incelemesi beklemektedir.
-5. ClinGen CNV Calculator karşılaştırmasında kalan 3 senaryo (7, 8, tam 4) — yukarıda not edildi.
+1. **Dış kaynak URL biçimleri canlı doğrulanmamıştır.** Sağlayıcılar URL şemalarını değiştirebilir; periyodik kontrol gerekir.
+2. Yazdırma/PDF çıktısının farklı tarayıcılarda tutarlılığı test edilmemiştir.
+3. Arayüz metinlerinin ACGS 2023 raporlama diline uygunluğu uzman incelemesi beklemektedir.
+4. ClinGen CNV Calculator karşılaştırmasında kalan 3 senaryo (7, 8, tam 4) — yukarıda not edildi.
+5. 11p15.5 ve 20q13.32 için ClinGen'de resmî "recurrent region" kürasyonu yok — yukarıda not edildi, mevcut yaklaşık sınırlar korundu.
 
 Yeni bir sapma bulunduğunda bu belgeye tarih, sürüm, inceleyen, beklenen ve gözlenen sonuçla birlikte kaydedilmelidir.
