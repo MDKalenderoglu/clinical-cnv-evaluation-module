@@ -14,3 +14,6 @@ _local_sources/
 *.docx
 
 # Do not commit real patient data, images, screenshots, or exported reports.
+
+# Claude Code / editör yerel ayarları
+.claude/

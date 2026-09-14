@@ -503,6 +503,47 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   a{color:#111!important;border:none!important}
   .panel-body{display:block!important}
 }
+/* ── v0.2: kanıt toplama, kapılar, olgu dosyası ── */
+.gate{display:flex;gap:10px;padding:11px 13px;border-radius:6px;margin-bottom:9px;font-size:12.5px;line-height:1.55;border:1px solid}
+.gate-ico{flex:0 0 auto;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px;padding-top:1px}
+.gate-body strong{display:block;margin-bottom:2px}
+.gate-block{background:color-mix(in srgb,var(--red) 9%,transparent);border-color:color-mix(in srgb,var(--red) 38%,transparent);color:var(--txt1)}
+.gate-block .gate-ico{color:var(--red)}
+.gate-warn{background:color-mix(in srgb,var(--amber) 11%,transparent);border-color:color-mix(in srgb,var(--amber) 38%,transparent);color:var(--txt1)}
+.gate-warn .gate-ico{color:var(--amber)}
+.gate-info{background:color-mix(in srgb,var(--blue) 8%,transparent);border-color:color-mix(in srgb,var(--blue) 30%,transparent);color:var(--txt1)}
+.gate-info .gate-ico{color:var(--blue)}
+.gate-ok{background:color-mix(in srgb,var(--teal) 9%,transparent);border-color:color-mix(in srgb,var(--teal) 32%,transparent);color:var(--txt1)}
+.gate-ok .gate-ico{color:var(--teal)}
+
+.lnk-group{border:1px solid var(--bd);border-radius:7px;margin-bottom:12px;overflow:hidden}
+.lnk-head{padding:10px 13px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+.lnk-head-t{font-weight:650;font-size:13.5px;color:var(--txt1)}
+.lnk-head-w{font-size:11.5px;color:var(--txt3);margin-top:3px;line-height:1.5}
+.lnk-list{padding:6px}
+.lnk-row{display:flex;gap:10px;align-items:flex-start;padding:8px 9px;border-radius:5px;text-decoration:none}
+.lnk-row:hover{background:var(--bg2)}
+.lnk-a{font-weight:600;font-size:12.5px;color:var(--blue);text-decoration:none;white-space:nowrap}
+.lnk-a:hover{text-decoration:underline}
+.lnk-n{font-size:11.5px;color:var(--txt3);line-height:1.5}
+
+.ev-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+.ev-tbl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);padding:7px 8px;border-bottom:1px solid var(--bd);font-weight:700}
+.ev-tbl td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.ev-src{font-weight:650;color:var(--txt1);white-space:nowrap}
+.ev-ask{font-size:11.5px;color:var(--txt3);line-height:1.5;margin-top:2px}
+.ev-feeds{font-size:10.5px;color:var(--txt4);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.ev-tbl input[type=text]{width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:4px;background:var(--bg);color:var(--txt1);font-family:inherit;font-size:12.5px}
+.ev-tbl input[type=text]:focus{outline:none;border-color:var(--blue)}
+.ev-chk{width:16px;height:16px;accent-color:var(--teal);cursor:pointer}
+.ev-done td{background:color-mix(in srgb,var(--teal) 5%,transparent)}
+@media(max-width:760px){.ev-tbl,.ev-tbl tbody,.ev-tbl tr,.ev-tbl td{display:block;width:100%}.ev-tbl thead{display:none}.ev-tbl tr{border:1px solid var(--bd);border-radius:6px;margin-bottom:9px;padding:4px}.ev-tbl td{border:none}}
+
+.casebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:11px 13px;border:1px solid var(--bd);border-radius:7px;background:var(--bg2);margin-bottom:14px}
+.casebar-st{font-size:11.5px;color:var(--txt3);margin-left:auto}
+.sw{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--txt2);cursor:pointer;user-select:none}
+.sw input{width:15px;height:15px;accent-color:var(--amber);cursor:pointer}
+.copy-ta{width:100%;min-height:260px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;padding:11px;border:1px solid var(--bd);border-radius:6px;background:var(--bg2);color:var(--txt1);white-space:pre;overflow:auto}
 </style>
 </head>
 <body>
@@ -533,6 +574,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="nav-item active" onclick="goTo(-1)" id="navN1"><div class="nnum">I</div><div>Olgu ve CNV Bilgi Kartı</div></div>
   <div class="nav-item" onclick="goTo(0)" id="nav0"><div class="nnum">II</div><div>Teknik Doğrulama</div></div>
   <div class="nav-item" onclick="goTo(1)" id="nav1"><div class="nnum">III</div><div>CNV Triaj</div></div>
+  <div class="nav-item" onclick="goStep('stepEV')" id="navEV"><div class="nnum">IV</div><div>Kaynak Sorgulama</div></div>
   <div class="nav-group">Puanlama</div>
   <div class="nav-item" onclick="goTo(2)" id="nav2"><div class="nnum">1</div><div>Section 1 · Gen İçeriği</div></div>
   <div class="nav-item" onclick="goTo(3)" id="nav3"><div class="nnum">2</div><div>Section 2 · HI/TS Overlap</div></div>
@@ -559,6 +601,17 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 <div class="main step-card active" id="stepN1">
   <div class="eyebrow">Olgu Hazırlığı</div>
   <div class="page-title">Olgu ve CNV Bilgi Kartı</div>
+  <div class="casebar">
+    <button class="btn btn-sm" type="button" onclick="exportCase()" title="Olguyu .json dosyası olarak indir">↓ Olguyu Kaydet (JSON)</button>
+    <button class="btn btn-sm" type="button" onclick="document.getElementById('caseFile').click()" title="Daha önce kaydedilmiş .json olgusunu yükle">↑ Olgu Yükle</button>
+    <input type="file" id="caseFile" accept="application/json,.json" style="display:none" onchange="importCase(this)">
+    <label class="sw" title="Açık olduğunda girdiler bu tarayıcının yerel deposunda tutulur">
+      <input type="checkbox" id="autosaveChk" onchange="toggleAutosave(this.checked)">
+      <span>Bu tarayıcıda otomatik kaydet</span>
+    </label>
+    <button class="btn-danger btn-sm" type="button" onclick="clearStoredCase()" title="Yerel depodaki olgu taslağını sil">Yerel kaydı sil</button>
+    <span class="casebar-st" id="caseStatus">Otomatik kaydetme kapalı — veriler yalnızca bu sekmede.</span>
+  </div>
   <div class="page-lead">Değerlendirmeye başlamadan önce hasta ve CNV bilgilerini girin. Bu bilgiler tüm adımlar boyunca korunacak ve nihai rapor kartında otomatik kullanılacaktır.</div>
 
   <!-- Hasta Fotoğrafı -->
@@ -747,6 +800,46 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
     <div class="note note-amber"><span class="note-icon">!</span><span><strong>ACMG Uncoupled İlkesi:</strong> CNV sınıfı hastadan bağımsızdır. Aynı CNV her hastada aynı sınıfı alır. Başvuru nedeni sınıfı değiştiremez.</span></div>
   </div></div>
   <div class="step-nav"><span class="step-ctr">III / 15</span><div class="nav-btns"><button class="btn" onclick="goTo(0)">← Teknik</button><button class="btn-primary btn" onclick="goTo(2)">Puanlamaya Başla →</button></div></div>
+</div>
+
+<!-- ═══════════ ADIM: KAYNAK SORGULAMA VE KANIT TOPLAMA ═══════════ -->
+<div class="main step-card" id="stepEV">
+  <div class="eyebrow">Kanıt Toplama</div>
+  <div class="page-title">Kaynak Sorgulama ve Kanıt Toplama</div>
+  <div class="page-lead">Puanlamaya geçmeden önce dış kaynakları sorgulayın. Aşağıdaki bağlantılar olgu kartındaki koordinat ve build bilgisinden üretilir; kopyala-yapıştır hatasını ortadan kaldırır. Bulduklarınızı çalışma sayfasına yazın — bu kayıtlar rapora gerekçe olarak geçer.</div>
+
+  <div class="guide-panel">
+    <div class="guide-title">Klinisyen Rehberi · Kaynak Sorgulama</div>
+    <p><strong>Bu bölüm neyi değerlendirir?</strong> Puanlamanın dayanacağı dış kanıtı sistematik olarak toplar: gen içeriği, dozaj duyarlılığı, popülasyon frekansı, hasta kayıtları ve literatür.</p>
+    <p><strong>Sıra önemlidir:</strong> Önce build ve koordinatı doğrulayın, sonra gen içeriğini çıkarın, sonra bilinen sendrom bölgesi olup olmadığına bakın, ardından popülasyon ve hasta verisine geçin. Yanlış sırada bakmak yanlış sınıflamaya götürür.</p>
+    <p><strong>Ne zaman atlanır?</strong> Atlanmamalıdır. Section 2 ve Section 4 puanları doğrudan bu sorguların çıktısına dayanır.</p>
+    <details><summary>Sık hata</summary><p>DGV'de kayıt görüp CNV'yi benign saymak. DGV bazı çalışmalarda klinik olarak seçilmiş örnekler ve eski düşük çözünürlüklü platform verisi içerir. Popülasyon frekansı için önce gnomAD-SV'ye bakın.</p></details>
+    <details><summary>Sık hata</summary><p>Otozomal resesif bir genin tek kopya kaybını patojenik bulgu gibi raporlamak. OMIM'de kalıtım modelini doğrulayın — bu bir taşıyıcılık bulgusu olabilir.</p></details>
+  </div>
+
+  <div class="form-sec">Kontrol Uyarıları</div>
+  <div id="gateBox"></div>
+
+  <div class="form-sec">Sorgu Bağlantıları</div>
+  <div class="nav-btns" style="margin-bottom:12px;flex-wrap:wrap;align-items:center">
+    <button class="btn" type="button" onclick="refreshEvidence()">↻ Bağlantıları Yenile</button>
+    <button class="btn-outline btn" type="button" onclick="goTo(-1)">← Olgu Kartını Düzenle</button>
+    <span class="parse-summary" id="linkStatus"></span>
+  </div>
+  <div id="linkBox"></div>
+
+  <div class="form-sec">Kanıt Çalışma Sayfası</div>
+  <div class="note note-blue" style="margin-bottom:10px">
+    <span class="note-icon">i</span>
+    <span>Her kaynağı sorguladıkça kutuyu işaretleyin ve bulgunuzu kısaca yazın. Sorgulanmamış kaynaklar rapor özetinde "eksik kanıt" olarak listelenir. Bu tablo hiçbir veriyi dışarı göndermez.</span>
+  </div>
+  <div style="overflow-x:auto"><table class="ev-tbl" id="evTable"><thead><tr><th style="width:34px">✓</th><th style="width:230px">Kaynak / Soru</th><th>Bulgu</th><th style="width:150px">Beslediği bölüm</th></tr></thead><tbody id="evBody"></tbody></table></div>
+  <div class="parse-summary" id="evProgress" style="margin-top:10px"></div>
+
+  <div class="step-nav">
+    <span class="step-ctr">IV / 16</span>
+    <div class="nav-btns"><button class="btn" onclick="goTo(1)">← Triaj</button><button class="btn-primary btn" onclick="goTo(2)">Puanlamaya Başla →</button></div>
+  </div>
 </div>
 
 <!-- ═══════════ ADIM 2: SECTION 1 ═══════════ -->
@@ -1266,6 +1359,23 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
   <div class="download-btns" id="downloadBtns" style="display:none">
     <button class="btn-primary btn" onclick="window.print()">⎙ Yazdır / PDF</button>
     <button class="btn-outline btn" onclick="dlHTML()">↓ HTML İndir</button>
+    <button class="btn-outline btn" onclick="showMarkdown()">≡ Markdown Özet</button>
+    <button class="btn-outline btn" onclick="exportCase()">↓ Olgu (JSON)</button>
+  </div>
+
+  <div id="mdPanel" style="display:none;margin-top:20px">
+    <div class="form-sec">Markdown Özet — Kopyalanabilir</div>
+    <div class="note note-amber" style="margin-bottom:10px">
+      <span class="note-icon">!</span>
+      <span>Otomatik üretilmiş metindir. Klinik raporda kullanılmadan önce uzman tarafından satır satır doğrulanmalıdır. Hasta tanımlayıcısı içerebilir — paylaşımdan önce kontrol edin.</span>
+    </div>
+    <textarea class="copy-ta" id="mdOut" readonly></textarea>
+    <div class="nav-btns" style="margin-top:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn-primary btn" type="button" onclick="copyMarkdown()">Panoya Kopyala</button>
+      <button class="btn-outline btn" type="button" onclick="dlMarkdown()">↓ .md İndir</button>
+      <button class="btn-outline btn" type="button" onclick="document.getElementById('mdPanel').style.display='none'">Kapat</button>
+      <span class="parse-summary" id="mdStatus"></span>
+    </div>
   </div>
 
   <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap">
@@ -1276,6 +1386,9 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 
 </div><!-- /layout -->
 
+<script src="assets/js/cnv-scoring.js"></script>
+<script src="assets/js/cnv-resources.js"></script>
+<script src="assets/js/cnv-case.js"></script>
 <script>
 /* ══════════════════════════════════════
    DURUM (STATE)
@@ -1590,14 +1703,7 @@ function pickS4a(key,ppc,el){
 function updateS4a(){
   var cnt=parseInt(document.getElementById("s4aCaseCount").value)||1;
   if(cnt<1)cnt=1;
-  var tot;
-  if(s4aKey==="4D"){tot=Math.max(-0.30*cnt,-0.30)}
-  else if(s4aKey==="4none"||s4aPPCase===0){tot=0}
-  else{
-    var capMap={"4A_conf":0.90,"4A_assu":0.90,"4B_conf":0.90,"4B_assu":0.90,"4C_conf":0.90,"4C_assu":0.90,"4E":0.30};
-    var cap=capMap[s4aKey]||0.90;
-    tot=Math.min(s4aPPCase*cnt,cap);
-  }
+  var tot=CNVScoring.caseEvidenceTotal(s4aKey,cnt);
   sc.s4a=tot;sel.s4a=s4aKey;
   updPts("s4a",tot);
   var fbe=document.getElementById("s4a-fb");
@@ -1621,13 +1727,12 @@ function setCNVType(t,el){
   document.getElementById("dup-choices").style.display=t==="dup"?"block":"none";
 }
 
-function totalScore(){return sc.s1+sc.s2+sc.s3+sc.s4a+sc.s4seg+sc.s4b+sc.s5}
+/* Puanlama cekirdegi assets/js/cnv-scoring.js icinde; otomatik testlerle dogrulanir. */
+var CLASS_COLOR={p:"var(--red)",lp:"var(--amber)",vus:"var(--txt3)",lb:"var(--teal)",b:"var(--blue)"};
+function totalScore(){return CNVScoring.total(sc)}
 function classify(s){
-  if(s>=0.99)return{cls:"Patojenik (P)",code:"p",color:"var(--red)"};
-  if(s>=0.90)return{cls:"Olas\u0131 Patojenik (LP)",code:"lp",color:"var(--amber)"};
-  if(s>-0.90)return{cls:"VUS",code:"vus",color:"var(--txt3)"};
-  if(s>-0.99)return{cls:"Olas\u0131 Benign (LB)",code:"lb",color:"var(--teal)"};
-  return{cls:"Benign (B)",code:"b",color:"var(--blue)"};
+  var r=CNVScoring.classify(s);
+  return{cls:r.cls,code:r.code,color:CLASS_COLOR[r.code]};
 }
 
 function updBadge(){
@@ -1895,6 +2000,7 @@ document.addEventListener("keydown",function(e){
   }
 });
 </script>
+<script src="assets/js/cnv-app.js"></script>
 
 </body>
 </html>

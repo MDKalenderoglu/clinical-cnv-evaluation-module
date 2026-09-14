@@ -1,0 +1,11 @@
+{
+  "name": "klinik-cnv-degerlendirme-modulu",
+  "version": "0.2.0",
+  "description": "Türkçe klinik CNV yorumlama ve eğitim prototipi — ACMG/ClinGen (Riggs et al. 2020)",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run.js",
+    "serve": "python3 -m http.server 8777"
+  },
+  "license": "SEE LICENSE-NOTICE.md"
+}

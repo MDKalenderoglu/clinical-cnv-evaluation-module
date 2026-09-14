@@ -1,25 +1,56 @@
-# Validation Plan
+# Doğrulama Planı
 
-This plan describes manual validation activities required before any institutional or clinical use. Completion of this document does not imply that validation has been performed.
+Bu plan, herhangi bir kurumsal veya klinik kullanımdan önce gereken doğrulama faaliyetlerini tanımlar. **Bu belgenin var olması doğrulamanın yapıldığı anlamına gelmez.**
 
-## Required Checks
+Güncel durum için [scoring-audit.md](scoring-audit.md).
 
-- Compare scoring against Riggs 2020 Table 1 and Table 2
-- Compare detailed scoring behavior against Supplemental Material 1
-- Compare representative cases against ClinGen CNV Calculator
-- Test classification thresholds
-- Test copy-number loss cases
-- Test copy-number gain cases
-- Test Section 4 caps and ranges
-- Test Section 5 inheritance scenarios
-- Test VUS/LB/B/P/LP boundaries
-- Test patient-data privacy behavior
-- Test no patient data in localStorage except theme preference if applicable
-- Test print/PDF output
-- Test unsafe HTML input rendering
-- Test GitHub Pages deployment
-- Record all deviations in `docs/scoring-audit.md`
+## Aşama 1 — Otomatik regresyon (TAMAMLANDI, v0.2.0)
 
-## Evidence Recording
+`node tests/run.js` ile her değişiklikte koşar; GitHub Actions üzerinde her push'ta zorunludur.
 
-Each validation run should record the tested version, date, reviewer, source reference, expected result, actual result, pass/fail status, and notes. Only synthetic or otherwise approved non-identifiable examples should be used.
+- [x] Sınıf eşiklerinin tüm sınır değerleri
+- [x] Puan toplama ve kayan nokta dayanıklılığı
+- [x] Section 1–5 kriter puanlarının katalog bütünlüğü
+- [x] Section 4A olgu çarpımı ve tavanları
+- [x] Kayıp ve kazanım Section 3 eşiklerinin ayrı olması
+- [x] Arayüzdeki her kriter butonunun modüldeki puanla birebir eşleşmesi
+- [x] Koordinat ayrıştırmanın geçersiz girdileri reddetmesi
+- [x] Karar kapılarının doğru seviyede (block/warn/info) tetiklenmesi
+- [x] Ağ çağrısı bulunmaması
+- [x] Otomatik kaydetmenin varsayılan kapalı olması
+
+## Aşama 2 — Bağımsız araç karşılaştırması (YAPILMADI — öncelikli)
+
+- [ ] `tests/unit/08-scenarios.test.js` içindeki 11 senaryoyu **ClinGen CNV Calculator**'a elle girip sonuçları karşılaştırın
+- [ ] Her sapmayı `scoring-audit.md`'ye kaydedin; sapmanın aritmetikten mi kriter seçiminden mi kaynaklandığını ayırın
+- [ ] Aynı senaryoları Franklin ile karşılaştırın (ikincil referans)
+- [ ] En az 10 ek sentetik olgu ekleyin: 3 kayıp, 3 kazanım, 2 sınıf sınırı, 1 ROH, 1 mozaik
+
+## Aşama 3 — Kaynak ve içerik doğrulaması (YAPILMADI)
+
+- [ ] Her kriter metnini Riggs 2020 Table 1–2 ve Supplemental Material 1 ile karşılaştırın
+- [ ] `SPECIAL_REGIONS` koordinatlarını ClinGen Dosage Map ve DECIPHER ile doğrulayın veya bölgeleri koordinatsız uyarıya çevirin
+- [ ] Dış kaynak URL'lerinin her birini tarayıcıda açıp doğru bölgeye gittiğini teyit edin
+- [ ] Sınırlılık metnini laboratuvar kalite sistemiyle uyumlu hâle getirin
+- [ ] Arayüz metinlerini ACGS 2023 raporlama dili açısından inceleyin
+- [ ] Uncoupling ilkesinin (sınıf ≠ hasta tanısı) her çıktıda korunduğunu doğrulayın
+
+## Aşama 4 — Kullanım doğrulaması (YAPILMADI)
+
+- [ ] En az 3 klinik genetik uzmanıyla aynı sentetik olgular üzerinde bağımsız değerlendirme; uyum (concordance) ölçümü
+- [ ] Araçla ve araçsız değerlendirme süresi karşılaştırması
+- [ ] Yanlış yönlendirme riski taraması: hangi adımda kullanıcı hatalı karar verebilir?
+- [ ] Yazdırma/PDF çıktısının Chrome, Safari, Firefox'ta tutarlılığı
+- [ ] Mobil ve tablet düzeninin kullanılabilirliği
+- [ ] Erişilebilirlik: klavye ile tam gezinme, ekran okuyucu uyumu
+
+## Aşama 5 — Yönetişim (YAPILMADI)
+
+- [ ] Kurumsal veri yönetişimi onayı
+- [ ] Etik kurul görüşü (eğitim amaçlı kullanım için)
+- [ ] Sürüm dondurma ve değişiklik kontrol süreci
+- [ ] Kullanıcı eğitimi ve sınırların yazılı bildirimi
+
+## Kanıt kaydı
+
+Her doğrulama koşumu şunları kaydetmelidir: test edilen sürüm (git commit), tarih, inceleyen, kaynak referansı, beklenen sonuç, gözlenen sonuç, geçti/kaldı ve notlar. **Yalnızca sentetik veya onaylanmış, tanımlayıcı içermeyen örnekler kullanılmalıdır.**
