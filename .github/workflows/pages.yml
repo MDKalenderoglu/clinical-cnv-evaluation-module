@@ -33,6 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+        with:
+          # Bu depoda Pages daha önce hiç etkinleştirilmediyse
+          # (Settings → Pages henüz ziyaret edilmemişse) API'den
+          # "Get Pages site" 404 döner. enablement:true bu adımın
+          # Pages'i kendi kendine, otomatik olarak açmasını sağlar.
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: "."
