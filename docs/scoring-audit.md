@@ -35,6 +35,7 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 | Uncoupling ilkesi (sınıf ≠ hasta tanısı) | Riggs 2020; ACGS 2023 | Arayüz metinleri, çıktı uyarıları | ❌ Metin incelemesi | Bekliyor |
 | Raporlama dili uygunluğu | ACGS 2023 | Çıktı metinleri | ❌ Metin incelemesi | Bekliyor |
 | Yazdırma / PDF çıktısı | — | `dlHTML()`, `window.print()` | ❌ Yok | Bekliyor |
+| Dış kaynak URL şemaları | 18 sağlayıcı | `buildLinks()` | ✅ 18/18 canlı doğrulandı, 2 kırık link bulunup düzeltildi | Periyodik yeniden kontrol öneriliyor — bkz. altta |
 
 ## ClinGen CNV Calculator karşılaştırması — sonuçlar
 
@@ -90,12 +91,29 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 
 **2 bölgede ClinGen'de tek bir "recurrent region" kürasyonu yok** (11p15.5, 20q13.32) — bunlar CNV-dozaj değil metilasyon/UPD kaynaklı bozukluklar olduğu için beklenen bir durum; mevcut yaklaşık sınırlar (BWS/SRS gen kümesi, GNAS gen sınırı) korundu ve bu durum not koduna eklendi.
 
+## Dış kaynak URL şemaları — canlı doğrulama sonuçları
+
+**Tarih:** 2026-09-14 · **Yöntem:** Kanıt toplama adımındaki 18 bağlantının tamamı tarayıcıda tek tek açıldı ve gerçek koordinat/gen ile doğru sayfaya gittiği kontrol edildi.
+
+**2 kırık link bulundu ve düzeltildi:**
+
+| Kaynak | Sorun | Düzeltme |
+| --- | --- | --- |
+| ClinGen Dosage Sensitivity Map | `?search=GEN` parametresi hiçbir filtreleme yapmıyordu — her zaman genel sayfaya düşüyordu | Gen adı varsa `/kb/genes/{GEN}` (doğrudan gen sayfası, HI/TS skorlarıyla), yoksa koordinat tabanlı `/kb/regions?...` (bölgeyle örtüşen tüm genleri VE kürasyon edilmiş "recurrent region" kayıtlarını birlikte listeler — bu URL şeması aynı zamanda `SPECIAL_REGIONS` doğrulamasında da kullanıldı) |
+| Orphanet | Arama derin bağlantısı (`/en/disease/search?query=`) 404 veriyordu — site autocomplete tabanlı arama kullanıyor, URL parametresi desteklemiyor | Güvenli ana arama sayfasına (`/en/disease`) düşürüldü, notta elle arama gerektiği açıkça belirtildi |
+
+**14 link canlı olarak doğru çalıştığı teyit edildi:** UCSC LiftOver (URL şeması), Ensembl Region in Detail, Ensembl SV, NCBI Genome Data Viewer, DECIPHER (bölge + hasta kayıtları), gnomAD-SV, gnomAD gen sayfası, DGV, ClinVar, PubMed, GeneReviews, PanelApp, Franklin, ClinGen CNV Calculator.
+
+**2 link bot korumasına takıldı, doğrudan doğrulanamadı:** UCSC Genome Browser, OMIM (Cloudflare/bot duvarı — otomasyonu engelliyor ama gerçek kullanıcı tıklamasını değil). URL şemaları standart ve stabil kabul edildi.
+
+Sonuçlar `tests/unit/10-link-verification.test.js` içinde donduruldu (bu test canlı ağ çağrısı yapmaz, yalnızca URL şemasının regresyona uğramadığını kontrol eder).
+
 ## Bilinen eksikler (öncelik sırasıyla)
 
-1. **Dış kaynak URL biçimleri canlı doğrulanmamıştır.** Sağlayıcılar URL şemalarını değiştirebilir; periyodik kontrol gerekir.
-2. Yazdırma/PDF çıktısının farklı tarayıcılarda tutarlılığı test edilmemiştir.
-3. Arayüz metinlerinin ACGS 2023 raporlama diline uygunluğu uzman incelemesi beklemektedir.
-4. ClinGen CNV Calculator karşılaştırmasında kalan 3 senaryo (7, 8, tam 4) — yukarıda not edildi.
-5. 11p15.5 ve 20q13.32 için ClinGen'de resmî "recurrent region" kürasyonu yok — yukarıda not edildi, mevcut yaklaşık sınırlar korundu.
+1. Yazdırma/PDF çıktısının farklı tarayıcılarda tutarlılığı test edilmemiştir.
+2. Arayüz metinlerinin ACGS 2023 raporlama diline uygunluğu uzman incelemesi beklemektedir.
+3. ClinGen CNV Calculator karşılaştırmasında kalan 3 senaryo (7, 8, tam 4) — yukarıda not edildi.
+4. 11p15.5 ve 20q13.32 için ClinGen'de resmî "recurrent region" kürasyonu yok — yukarıda not edildi, mevcut yaklaşık sınırlar korundu.
+5. UCSC ve OMIM linkleri bot koruması nedeniyle otomatik olarak doğrudan doğrulanamadı — periyodik elle kontrol önerilir.
 
 Yeni bir sapma bulunduğunda bu belgeye tarih, sürüm, inceleyen, beklenen ve gözlenen sonuçla birlikte kaydedilmelidir.

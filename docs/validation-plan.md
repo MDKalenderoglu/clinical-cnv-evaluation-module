@@ -31,7 +31,7 @@ Güncel durum için [scoring-audit.md](scoring-audit.md).
 
 - [ ] Her kriter metnini Riggs 2020 Table 1–2 ve Supplemental Material 1 ile karşılaştırın
 - [x] `SPECIAL_REGIONS` koordinatlarını ClinGen Dosage Map ile doğrulayın — **15 bölge × 2 build tamamlandı, 8 gerçek sapma düzeltildi** (biri kritik: 22q11.2 distal hiç örtüşmüyordu). Ayrıntı: [scoring-audit.md](scoring-audit.md). DECIPHER ile ikinci kaynak karşılaştırması henüz yapılmadı.
-- [ ] Dış kaynak URL'lerinin her birini tarayıcıda açıp doğru bölgeye gittiğini teyit edin
+- [x] Dış kaynak URL'lerinin her birini tarayıcıda açıp doğru bölgeye gittiğini teyit edin — **18/18 link canlı test edildi, 2 kırık link bulunup düzeltildi** (ClinGen Dosage Map, Orphanet). Ayrıntı: [scoring-audit.md](scoring-audit.md). UCSC ve OMIM bot koruması nedeniyle doğrudan doğrulanamadı.
 - [ ] Sınırlılık metnini laboratuvar kalite sistemiyle uyumlu hâle getirin
 - [ ] Arayüz metinlerini ACGS 2023 raporlama dili açısından inceleyin
 - [ ] Uncoupling ilkesinin (sınıf ≠ hasta tanısı) her çıktıda korunduğunu doğrulayın

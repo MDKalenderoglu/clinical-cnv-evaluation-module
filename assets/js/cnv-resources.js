@@ -80,8 +80,8 @@
       title: "Dozaj duyarlılığı — Section 2'nin dayanağı",
       why: "Bölge veya gen kurulmuş HI/TS listesinde mi? ClinGen skoru 3 ise Section 2A/2A_d doğrudan uygulanır.",
       links: [
-        { name: "ClinGen Dosage Sensitivity Map", url: "https://search.clinicalgenome.org/kb/gene-dosage?page=1&size=25&search=" + encodeURIComponent(firstGene || (extra.cytoband || "")), note: "HI skoru 3 = yeterli kanıt; 30 = otozomal resesif; 40 = dozaj duyarsız" },
-        { name: "ClinGen — bölge listesi (ISCA)", url: "https://search.clinicalgenome.org/kb/gene-dosage", note: "Tekrarlayan sendrom bölgelerinin tam sınırları" },
+        { name: "ClinGen — bölge ve gen sorgusu (koordinat)", url: "https://search.clinicalgenome.org/kb/regions?page=1&type=" + (build === "GRCh37" ? "GRCh37" : "GRCh38") + "&region=" + encodeURIComponent(region) + "&size=100&search=", note: "Bölgeyle örtüşen tüm genleri VE kürasyon edilmiş \"recurrent region\" kayıtlarını (HI/TS skorlarıyla) birlikte listeler" },
+        { name: firstGene ? "ClinGen — " + firstGene + " gen sayfası" : "ClinGen Dosage Sensitivity Map", url: firstGene ? "https://search.clinicalgenome.org/kb/genes/" + encodeURIComponent(firstGene) : "https://search.clinicalgenome.org/kb/gene-dosage", note: "HI skoru 3 = yeterli kanıt; 30 = otozomal resesif; 40 = dozaj duyarsız" },
         { name: "DECIPHER — bölge görünümü", url: "https://www.deciphergenomics.org/browser#q/" + encodeURIComponent((build === "GRCh37" ? "GRCh37:" : "") + c.chr + ":" + c.start + "-" + c.end), note: "Genomic disorders track'i ve hasta kayıtları" }
       ]
     });
@@ -116,7 +116,7 @@
         { name: "OMIM", url: "https://www.omim.org/search?index=entry&search=" + encodeURIComponent(firstGene || (extra.cytoband || "")), note: "Morbid Map ve kalıtım modeli" },
         { name: "gnomAD gen kısıtlılığı (pLI / LOEUF)", url: firstGene ? "https://gnomad.broadinstitute.org/gene/" + encodeURIComponent(firstGene) + "?dataset=" + (build === "GRCh37" ? "gnomad_r2_1" : "gnomad_r4") : "https://gnomad.broadinstitute.org/", note: "LoF intoleransı — destekleyici kanıt, tek başına sınıflandırmaz" },
         { name: "GeneReviews", url: "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=" + encodeURIComponent(firstGene || ""), note: "Fenotip tanımı ve izlem önerileri" },
-        { name: "Orphanet", url: "https://www.orpha.net/en/disease/search?query=" + encodeURIComponent(firstGene || (extra.cytoband || "")), note: "Nadir hastalık tanımı" },
+        { name: "Orphanet", url: "https://www.orpha.net/en/disease", note: "Nadir hastalık tanımı — Orphanet'in arama kutusu koordinat/parametre ile derin bağlantıyı desteklemiyor; " + (firstGene ? firstGene : "gen/hastalık adını") + " sayfada elle arayın" },
         { name: "PanelApp (Genomics England)", url: "https://panelapp.genomicsengland.co.uk/panels/entities/" + encodeURIComponent(firstGene || ""), note: "Gen-hastalık kanıt düzeyi" }
       ]
     });
