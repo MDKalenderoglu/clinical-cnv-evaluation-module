@@ -41,7 +41,7 @@ Güncel durum için [scoring-audit.md](scoring-audit.md).
 - [ ] En az 3 klinik genetik uzmanıyla aynı sentetik olgular üzerinde bağımsız değerlendirme; uyum (concordance) ölçümü
 - [ ] Araçla ve araçsız değerlendirme süresi karşılaştırması
 - [ ] Yanlış yönlendirme riski taraması: hangi adımda kullanıcı hatalı karar verebilir?
-- [ ] Yazdırma/PDF çıktısının Chrome, Safari, Firefox'ta tutarlılığı
+- [x] Yazdırma/PDF çıktısı (Chrome) — **gerçek bir sızıntı bulundu ve düzeltildi**: sonuç ekranından yazdırırken klinisyen rehberi, skor grafiği ve eksik-kanıt listeleri rapor kartıyla birlikte basılıyordu. Ayrıntı: [scoring-audit.md](scoring-audit.md). Safari ve Firefox'ta doğrulama bekliyor.
 - [ ] Mobil ve tablet düzeninin kullanılabilirliği
 - [ ] Erişilebilirlik: klavye ile tam gezinme, ekran okuyucu uyumu
 

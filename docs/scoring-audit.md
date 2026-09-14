@@ -34,7 +34,7 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 | **ClinGen CNV Calculator karşılaştırması** | Riggs 2020 resmî uygulayıcı | — | ✅ 8/11 senaryo canlı doğrulandı, 0 sapma | Kalan 3 senaryo (7, 8, kısmen 4) bekliyor — bkz. altta |
 | Uncoupling ilkesi (sınıf ≠ hasta tanısı) | Riggs 2020; ACGS 2023 | Arayüz metinleri, çıktı uyarıları | ❌ Metin incelemesi | Bekliyor |
 | Raporlama dili uygunluğu | ACGS 2023 | Çıktı metinleri | ❌ Metin incelemesi | Bekliyor |
-| Yazdırma / PDF çıktısı | — | `dlHTML()`, `window.print()` | ❌ Yok | Bekliyor |
+| Yazdırma / PDF çıktısı | — | `dlHTML()`, `window.print()` | ✅ `07` — gerçek bir sızıntı bulundu ve düzeltildi | Chrome'da doğrulandı; Safari/Firefox bekliyor — bkz. altta |
 | Dış kaynak URL şemaları | 18 sağlayıcı | `buildLinks()` | ✅ 18/18 canlı doğrulandı, 2 kırık link bulunup düzeltildi | Periyodik yeniden kontrol öneriliyor — bkz. altta |
 
 ## ClinGen CNV Calculator karşılaştırması — sonuçlar
@@ -108,9 +108,21 @@ Son güncelleme: v0.2.0 · Test sayısı: 253 · Koşum: `node tests/run.js`
 
 Sonuçlar `tests/unit/10-link-verification.test.js` içinde donduruldu (bu test canlı ağ çağrısı yapmaz, yalnızca URL şemasının regresyona uğramadığını kontrol eder).
 
+## Yazdırma / PDF çıktısı — bulgu ve düzeltme
+
+**Tarih:** 2026-09-14 · **Yöntem:** Sonuç ekranında bir rapor kartı oluşturulup `@media print` kuralları geçici olarak sayfaya enjekte edilerek (gerçek yazdırma önizlemesi simülasyonu) hangi öğelerin basılı çıktıda göründüğü Chrome tabanlı tarayıcıda kontrol edildi.
+
+**Gerçek bir sızıntı bulundu:** "⎙ Yazdır / PDF" düğmesi (`window.print()`) sonuç ekranından tetiklendiğinde, `@media print` yalnızca gezinme/kenar çubuğu gibi uygulama kromunu gizliyordu — **klinisyen rehberi kutusu, skor grafiği, kanıt/eksik-kanıt listeleri ve "Puanlamaya Dön / Sıfırla" düğmeleri de rapor kartıyla birlikte basılıyordu.** Bu, çıktıyı karışık ve hastaya sunulabilir olmaktan uzak hale getiriyordu.
+
+**Düzeltme:** `#resultScreen>.guide-panel`, `#resultScreen>.result-summary`, `#resultScreen>.panel` ve `#mdPanel` yazdırmada gizlendi; alt buton satırına `.no-print` sınıfı eklendi. Normal adım sayfalarındaki klinisyen rehberi kutuları bu değişiklikten etkilenmez (seçici yalnızca sonuç ekranına özeldir) — bu ayrım `07-html-consistency.test.js` içinde ayrı bir testle güvence altına alındı.
+
+**Not:** "↓ HTML İndir" (`dlHTML()`) yolu bu sızıntıdan **hiç etkilenmedi** — o fonksiyon zaten yalnızca `#reportCard` içeriğini alıp tamamen ayrı, taşınabilir bir stil sayfasıyla dışa aktarıyor. Tarayıcılar arası en tutarlı PDF/yazdırma deneyimi için bu yol (dosyayı indirip herhangi bir tarayıcıda açıp yazdırmak) `window.print()`'ten daha güvenilirdir.
+
+**Doğrulanmayan:** Yalnızca Chromium tabanlı tarayıcıda test edildi (bu oturumun araç kısıtı). Safari ve Firefox'ta sayfa-sonu (page-break) davranışı ve `color-mix()` gibi CSS Color 5 özelliklerinin (kanıt toplama adımındaki `.gate-*` kutularında kullanılıyor, ekran görünümü için — print çıktısını etkilemiyor) daha eski tarayıcı sürümlerinde zarif bozulup bozulmadığı doğrulanmadı.
+
 ## Bilinen eksikler (öncelik sırasıyla)
 
-1. Yazdırma/PDF çıktısının farklı tarayıcılarda tutarlılığı test edilmemiştir.
+1. Yazdırma/PDF çıktısının Safari ve Firefox'ta doğrulanması (Chrome'da doğrulandı ve bir sızıntı düzeltildi).
 2. Arayüz metinlerinin ACGS 2023 raporlama diline uygunluğu uzman incelemesi beklemektedir.
 3. ClinGen CNV Calculator karşılaştırmasında kalan 3 senaryo (7, 8, tam 4) — yukarıda not edildi.
 4. 11p15.5 ve 20q13.32 için ClinGen'de resmî "recurrent region" kürasyonu yok — yukarıda not edildi, mevcut yaklaşık sınırlar korundu.

@@ -83,6 +83,36 @@ module.exports = function (suite) {
       "eski sınıflandırma kopyası inline koddan kaldırıldı");
   });
 
+  suite("Yazdırma/PDF çıktısı — yalnızca rapor kartı basılır (2026-09-14 doğrulaması)", function (t) {
+    /* Canlı tarayıcı testinde bulundu: @media print bloğu yalnızca uygulama
+       kromunu (sidebar, nav vb.) gizliyordu; sonuç ekranındaki klinisyen
+       rehberi, skor grafiği ve eksik-kanıt panelleri rapor kartıyla
+       birlikte basılıyordu. Bu test o regresyonun geri gelmediğini
+       garanti eder. */
+    var printBlock = (html.match(/@media print\{([\s\S]*?)\n\}/) || [])[1] || "";
+    t.ok(printBlock.length > 100, "@media print bloğu bulundu");
+
+    t.ok(printBlock.indexOf("#resultScreen>.guide-panel") >= 0,
+      "sonuç ekranındaki klinisyen rehberi print'te gizleniyor");
+    t.ok(printBlock.indexOf("#resultScreen>.result-summary") >= 0,
+      "sonuç ekranındaki skor/açıklama özeti print'te gizleniyor");
+    t.ok(printBlock.indexOf("#resultScreen>.panel") >= 0,
+      "sonuç ekranındaki panel bölümleri (grafik, kanıt, eksik kanıt, sonraki adım, eğitim) print'te gizleniyor");
+    t.ok(printBlock.indexOf("#mdPanel") >= 0, "Markdown paneli print'te gizleniyor");
+    t.ok(printBlock.indexOf(".no-print") >= 0, "genel .no-print sınıfı tanımlı");
+    t.ok(printBlock.indexOf(".report-card") >= 0, "rapor kartının kendisi için print stili var");
+
+    /* Alt buton satırı .no-print sınıfını taşımalı */
+    t.ok(html.indexOf('class="no-print" style="margin-top:24px') >= 0,
+      "sonuç ekranındaki 'Puanlamaya Dön / Sıfırla' satırı .no-print ile işaretli");
+
+    /* Normal adım sayfalarındaki klinisyen rehberi bu seçiciden ETKİLENMEMELİ
+       — seçici #resultScreen'e özel olmalı, genel .guide-panel'i hedeflememeli */
+    var bareGuidePanelHide = /(^|[,{])\.guide-panel\{[^}]*display:\s*none/.test(printBlock);
+    t.ok(!bareGuidePanelHide,
+      "adım sayfalarındaki klinisyen rehberi yanlışlıkla genel kuralla gizlenmiyor (seçici #resultScreen'e özel)");
+  });
+
   suite("Gizlilik sözleşmesi", function (t) {
     /* Uygulama hiçbir ağ çağrısı yapmamalı */
     var app = ["cnv-scoring.js", "cnv-resources.js", "cnv-case.js", "cnv-app.js"]

@@ -487,6 +487,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
 @media print{
   body{background:#fff!important;color:#111!important;font-size:11pt}
   .hdr,.sidebar,.hamburger,.mob-overlay,.progbar,.step-nav,.nav-btns,.theme-btn,.btn-danger,.download-btns,.live-badge,.edu-toggle,.edu-box{display:none!important}
+  /* Sonuç ekranından yazdırırken yalnızca rapor kartı basılır; klinisyen
+     rehberi, skor grafiği, eksik-kanıt listesi ve Markdown paneli gibi
+     uygulama-içi (hastaya özgü olmayan) bölümler basılı çıktıya karışmaz. */
+  #resultScreen>.guide-panel,#resultScreen>.result-summary,#resultScreen>.pref-summary,
+  #resultScreen>.panel,#mdPanel,.no-print{display:none!important}
   .layout{display:block!important}
   .main,.result-screen{padding:0!important;max-width:100%!important}
   .report-card{break-inside:avoid;border:2px solid #333!important}
@@ -1378,7 +1383,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2)
     </div>
   </div>
 
-  <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap">
+  <div class="no-print" style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn" onclick="goTo(6)">← Puanlamaya Dön</button>
     <button class="btn-danger btn-sm" onclick="resetAll()" title="Puanlama ve mevcut seçimleri sıfırla">Sıfırla</button>
   </div>
